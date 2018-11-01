@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Datable",
+        "repositoryURL": "https://github.com/OperatorFoundation/Datable",
+        "state": {
+          "branch": null,
+          "revision": "cc91e8b71dbbe125a19090c26f4e8c21b6d0dcb4",
+          "version": "1.0.5"
+        }
+      },
+      {
+        "package": "Transport",
+        "repositoryURL": "https://github.com/OperatorFoundation/Transport",
+        "state": {
+          "branch": null,
+          "revision": "50f77398e9914d9d53260eeea5f3c14aa39e2b4a",
+          "version": "0.1.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
