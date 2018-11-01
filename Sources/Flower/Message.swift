@@ -18,6 +18,12 @@ public struct EndpointV4: MaybeDatable
 {
     public let host: IPv4Address
     public let port: NWEndpoint.Port
+
+    public init(host: IPv4Address, port: NWEndpoint.Port)
+    {
+        self.host = host
+        self.port = port
+    }
     
     public init?(data: Data)
     {
@@ -54,6 +60,12 @@ public struct EndpointV6: MaybeDatable
 {
     public let host: IPv6Address
     public let port: NWEndpoint.Port
+    
+    public init(host: IPv6Address, port: NWEndpoint.Port)
+    {
+        self.host = host
+        self.port = port
+    }
     
     public init?(data: Data)
     {
