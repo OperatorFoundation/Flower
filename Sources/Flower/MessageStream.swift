@@ -9,29 +9,14 @@ import Foundation
 import Transport
 import Network
 
-func readMessages(connection: Connection, handler: @escaping (Message) -> Void)
+extension Connection
 {
-    connection.receive(minimumIncompleteLength: 2, maximumLength: 2)
+    public func readMessages(handler: @escaping (Message) -> Void)
     {
-        (maybeData, maybeContext, isComplete, maybeError) in
-        
-        if let error = maybeError
-        {
-            print(error)
-            return
-        }
-        
-        guard let data = maybeData else
-        {
-            return
-        }
-        
-        let length = Int(data.uint16)
-        
-        connection.receive(minimumIncompleteLength: length, maximumLength: length, completion:
+        self.receive(minimumIncompleteLength: 2, maximumLength: 2)
         {
             (maybeData, maybeContext, isComplete, maybeError) in
-
+            
             if let error = maybeError
             {
                 print(error)
@@ -43,25 +28,43 @@ func readMessages(connection: Connection, handler: @escaping (Message) -> Void)
                 return
             }
             
-            guard let message = Message(data: data) else
+            let length = Int(data.uint16)
+            
+            self.receive(minimumIncompleteLength: length, maximumLength: length, completion:
             {
-                return
-            }
-            
-            handler(message)
-            readMessages(connection: connection, handler: handler)
-        })
+                (maybeData, maybeContext, isComplete, maybeError) in
+
+                if let error = maybeError
+                {
+                    print(error)
+                    return
+                }
+                
+                guard let data = maybeData else
+                {
+                    return
+                }
+                
+                guard let message = Message(data: data) else
+                {
+                    return
+                }
+                
+                handler(message)
+                self.readMessages(handler: handler)
+            })
+        }
     }
-}
 
-func writeMessage(connection: Connection, message: Message, completion: @escaping (NWError?) -> Void)
-{
-    let data = message.data
+    public func writeMessage(message: Message, completion: @escaping (NWError?) -> Void)
+    {
+        let data = message.data
 
-    connection.send(content: data, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
-        {
-            (maybeError) in
-            
-            completion(maybeError)
-    }))
+        self.send(content: data, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+            {
+                (maybeError) in
+                
+                completion(maybeError)
+        }))
+    }
 }
