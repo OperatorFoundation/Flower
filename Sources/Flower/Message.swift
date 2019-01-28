@@ -10,6 +10,8 @@ public enum MessageType: UInt8
     case TCPDataType = 3
     case UDPDataV4Type = 4
     case UDPDataV6Type = 5
+    case IPDataV4Type = 6
+    case IPDataV6Type = 7
 }
 
 public typealias StreamIdentifier = UInt64
@@ -106,6 +108,8 @@ public enum Message
     case TCPData(StreamIdentifier, Data)
     case UDPDataV4(EndpointV4, Data)
     case UDPDataV6(EndpointV6, Data)
+    case IPDataV4(Data)
+    case IPDataV6(Data)
 }
 
 extension Message: MaybeDatable
@@ -193,6 +197,10 @@ extension Message: MaybeDatable
                 }
                 
                 self = .UDPDataV6(dst, payload)
+            case .IPDataV4Type:
+                self = .IPDataV4(tail)
+            case .IPDataV6Type:
+                self = .IPDataV6(tail)
         }
     }
     
@@ -222,6 +230,12 @@ extension Message: MaybeDatable
             case .UDPDataV6(let dst, let payload):
                 result.append(MessageType.UDPDataV6Type.rawValue)
                 result.append(dst.data)
+                result.append(payload)
+            case .IPDataV4(let payload):
+                result.append(MessageType.IPDataV4Type.rawValue)
+                result.append(payload)
+            case .IPDataV6(let payload):
+                result.append(MessageType.IPDataV6Type.rawValue)
                 result.append(payload)
         }
         
