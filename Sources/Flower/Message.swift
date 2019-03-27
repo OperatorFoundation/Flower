@@ -10,14 +10,10 @@ public enum MessageType: UInt8
     case TCPDataType = 3
     case UDPDataV4Type = 4
     case UDPDataV6Type = 5
-    case IPOpenV4Type = 6
-    case IPOpenV6Type = 7
-    case IPCloseV4Type = 8
-    case IPCloseV6Type = 9
-    case IPAssignV4Type = 10
-    case IPAssignV6Type = 11
-    case IPDataV4Type = 12
-    case IPDataV6Type = 13
+    case IPAssignV4Type = 6
+    case IPAssignV6Type = 7
+    case IPDataV4Type = 8
+    case IPDataV6Type = 9
 }
 
 public typealias StreamIdentifier = UInt64
@@ -114,10 +110,6 @@ public enum Message
     case TCPData(StreamIdentifier, Data)
     case UDPDataV4(EndpointV4, Data)
     case UDPDataV6(EndpointV6, Data)
-    case IPOpenV4()
-    case IPOpenV6()
-    case IPCloseV4()
-    case IPCloseV6()
     case IPAssignV4(IPv4Address)
     case IPAssignV6(IPv6Address)
     case IPDataV4(Data)
@@ -213,14 +205,6 @@ extension Message: MaybeDatable
                 self = .IPDataV4(tail)
             case .IPDataV6Type:
                 self = .IPDataV6(tail)
-        case .IPOpenV4Type:
-            self = .IPOpenV4()
-        case .IPOpenV6Type:
-            self = .IPOpenV6()
-        case .IPCloseV4Type:
-            self = .IPCloseV4()
-        case .IPCloseV6Type:
-            self = .IPCloseV6()
         case .IPAssignV4Type:
             guard let ip = IPv4Address(data: tail) else
             {
@@ -271,14 +255,6 @@ extension Message: MaybeDatable
             case .IPDataV6(let payload):
                 result.append(MessageType.IPDataV6Type.rawValue)
                 result.append(payload)
-            case .IPOpenV4:
-                result.append(MessageType.IPOpenV4Type.rawValue)
-            case .IPOpenV6:
-                result.append(MessageType.IPOpenV6Type.rawValue)
-            case .IPCloseV4:
-                result.append(MessageType.IPCloseV4Type.rawValue)
-            case .IPCloseV6:
-                result.append(MessageType.IPCloseV6Type.rawValue)
             case .IPAssignV4(let ip):
                 result.append(MessageType.IPAssignV4Type.rawValue)
                 result.append(ip.data)
