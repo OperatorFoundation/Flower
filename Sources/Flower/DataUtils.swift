@@ -11,8 +11,12 @@ extension Data
 {
     public func splitOn(position: UInt) -> (Data, Data)?
     {
-        let head = self[0..<position]
-        let tail = self[position...]
+        let headSlice = self[0..<position]
+        let head = Data(headSlice)
+        
+        let tailSlice = self[position...]
+        let tail = Data(tailSlice)
+        
         return (head, tail)
     }
 }

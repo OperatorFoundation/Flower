@@ -16,7 +16,7 @@ name: "Flower",
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/OperatorFoundation/Datable", from: "1.0.5"),
+        .package(url: "https://github.com/OperatorFoundation/Datable", from: "2.0.1"),
         .package(url: "https://github.com/OperatorFoundation/Transport", from: "0.2.1"),
     ],
     targets: [
