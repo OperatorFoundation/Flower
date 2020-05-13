@@ -126,6 +126,7 @@ extension Message: MaybeDatable
         
         guard let messageType = MessageType.init(rawValue: messageTypeByte[0]) else
         {
+            print("Failed to initialize a Message. Message type byte of \(messageTypeByte[0]) is invalid.")
             return nil
         }
         
@@ -265,4 +266,69 @@ extension Message: MaybeDatable
         
         return result
     }
+}
+
+extension Message: CustomStringConvertible
+{
+    public var description: String {
+        switch self {
+        case .IPAssignV4(let ipv4Address):
+            return """
+            IPAssignV4
+            IP: \(ipv4Address)
+            """
+        case .IPAssignV6(let ipv6Address):
+            return """
+            IPAssignV6
+            ip: \(ipv6Address)
+            """
+        case .IPDataV4(let data):
+            return """
+            IPDataV4
+            data: \(data)
+            """
+        case .IPDataV6(let data):
+            return """
+            IPDataV6
+            data: \(data)
+            """
+        case .TCPClose(let streamIdentifer):
+            return """
+            TCPClose
+            StreamIdentifier: \(streamIdentifer)
+            """
+        case .TCPData(let streamIdentifer, let data):
+            return """
+            TCPData
+            streamIdentifier: \(streamIdentifer)
+            data: \(data)
+            """
+        case .TCPOpenV4(let endpointV4, let streamIdentifier):
+            return """
+            TCPOpenV4
+            endpointV4: \(endpointV4)
+            streamIdentifier: \(streamIdentifier)
+            """
+        case .TCPOpenV6(let endpointV6, let streamIdentifier):
+            return """
+            TCPOpenV6
+            endpointV6: \(endpointV6)
+            streamIdentifier: \(streamIdentifier)
+            """
+        case .UDPDataV4(let endpointV4, let data):
+            return """
+            UDPDataV4
+            endpointV4: \(endpointV4)
+            data: \(data))
+            """
+        case .UDPDataV6(let endpointV6, let data):
+            return """
+            UDPDataV6
+            endpointV6: \(endpointV6)
+            data: \(data)
+            """
+        }
+    }
+    
+    
 }
