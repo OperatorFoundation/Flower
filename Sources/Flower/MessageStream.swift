@@ -8,6 +8,7 @@
 import Foundation
 import Transport
 import Network
+import Datable
 
 extension Connection
 {
@@ -19,7 +20,7 @@ extension Connection
             
             if let error = maybeError
             {
-                print(error)
+                print("Error when calling receive (message length) from readMessages: \(error)")
                 return
             }
             
@@ -36,7 +37,7 @@ extension Connection
 
                 if let error = maybeError
                 {
-                    print(error)
+                    print("Error when calling receive (message body) from readMessages: \(error)")
                     return
                 }
                 
@@ -59,12 +60,26 @@ extension Connection
     public func writeMessage(message: Message, completion: @escaping (NWError?) -> Void)
     {
         let data = message.data
-
-        self.send(content: data, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+        let length = UInt16(data.count)
+        let lengthData = length.data
+        
+        self.send(content: lengthData, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
             {
-                (maybeError) in
+                (maybeLengthError) in
                 
-                completion(maybeError)
+                if let lengthError = maybeLengthError
+                {
+                    print("Error sending length bytes. Error: \(lengthError)")
+                    completion(lengthError)
+                    return
+                }
+                
+                self.send(content: data, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+                {
+                    (maybeError) in
+                    
+                    completion(maybeError)
+            }))
         }))
     }
 }
