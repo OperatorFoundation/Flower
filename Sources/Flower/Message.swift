@@ -36,7 +36,7 @@ public struct EndpointV4: MaybeDatable
             return nil
         }
         
-        guard let p = NWEndpoint.Port(rawValue: portData.uint16) else
+        guard let p = NWEndpoint.Port(rawValue: portData.uint16!) else
         {
             return nil
         }
@@ -78,7 +78,7 @@ public struct EndpointV6: MaybeDatable
             return nil
         }
         
-        guard let p = NWEndpoint.Port(rawValue: portData.uint16) else
+        guard let p = NWEndpoint.Port(rawValue: portData.uint16!) else
         {
             return nil
         }
@@ -144,7 +144,7 @@ extension Message: MaybeDatable
                     return nil
                 }
                 
-                let streamid = streamidData.uint64
+                let streamid = streamidData.uint64!
                 
                 self = .TCPOpenV4(dst, streamid)
             case .TCPOpenV6Type:
@@ -159,11 +159,11 @@ extension Message: MaybeDatable
                     return nil
                 }
                 
-                let streamid = streamidData.uint64
+                let streamid = streamidData.uint64!
                 
                 self = .TCPOpenV6(dst, streamid)
             case .TCPCloseType:
-                let streamid = tail.uint64
+                let streamid = tail.uint64!
 
                 self = .TCPClose(streamid)
             case .TCPDataType:
@@ -173,7 +173,7 @@ extension Message: MaybeDatable
                     return nil
                 }
 
-                let streamid = streamidData.uint64
+                let streamid = streamidData.uint64!
                 
                 self = .TCPData(streamid, payload)
             case .UDPDataV4Type:

@@ -29,7 +29,7 @@ extension Connection
                 return
             }
             
-            let length = Int(data.uint16)
+            let length = Int(data.uint16!)
             
             self.receive(minimumIncompleteLength: length, maximumLength: length, completion:
             {

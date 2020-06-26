@@ -81,7 +81,7 @@ extension IPv6Address: MaybeDatable
 extension NWEndpoint.Port: Datable
 {
     public init(data: Data) {
-        self.init(rawValue: data.uint16)!
+        self.init(rawValue: data.uint16!)!
     }
     
     public var data: Data {
