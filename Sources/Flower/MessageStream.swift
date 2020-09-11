@@ -7,8 +7,12 @@
 
 import Foundation
 import Transport
-import Network
 import Datable
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+import Network
+#elseif os(Linux)
+import NetworkLinux
+#endif
 
 extension Connection
 {
