@@ -16,7 +16,7 @@ import NetworkLinux
 enum AddressSize: Int
 {
     case v4 = 4
-    //case v6 = 16
+    case v6 = 16
 }
 
 extension NWEndpoint.Host: MaybeDatable
@@ -36,13 +36,13 @@ extension NWEndpoint.Host: MaybeDatable
                 }
                 
                 self = .ipv4(address)
-//            case .v6:
-//                guard let address = IPv6Address(data) else
-//                {
-//                    return nil
-//                }
-//
-//                self = .ipv6(address)
+            case .v6:
+                guard let address = IPv6Address(data) else
+                {
+                    return nil
+                }
+
+                self = .ipv6(address)
         }
     }
     
@@ -51,8 +51,8 @@ extension NWEndpoint.Host: MaybeDatable
         {
             case .ipv4(let address):
                 return address.data
-//            case .ipv6(let address):
-//                return address.data
+            case .ipv6(let address):
+                return address.data
             default:
                 print("Error, named interfaces not supported")
                 return Data()
@@ -71,16 +71,16 @@ extension IPv4Address: MaybeDatable
     }
 }
 
-//extension IPv6Address: MaybeDatable
-//{
-//    public init?(data: Data) {
-//        self.init(data)
-//    }
-//
-//    public var data: Data {
-//        return self.rawValue
-//    }
-//}
+extension IPv6Address: MaybeDatable
+{
+    public init?(data: Data) {
+        self.init(data)
+    }
+
+    public var data: Data {
+        return self.rawValue
+    }
+}
 
 extension NWEndpoint.Port: Datable
 {

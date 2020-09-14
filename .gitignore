@@ -5,3 +5,5 @@
 *.resolved
 *.xcworkspacedata
 *.xcuserstate
+.idea
+.swiftpm
