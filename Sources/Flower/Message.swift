@@ -41,10 +41,7 @@ public struct EndpointV4: MaybeDatable
             return nil
         }
         
-        guard let p = NWEndpoint.Port(rawValue: portData.uint16!) else
-        {
-            return nil
-        }
+        let p = NWEndpoint.Port(integerLiteral: portData.uint16!)
         
         port = p
         
@@ -83,10 +80,8 @@ public struct EndpointV6: MaybeDatable
             return nil
         }
 
-        guard let p = NWEndpoint.Port(rawValue: portData.uint16!) else
-        {
-            return nil
-        }
+        let p = NWEndpoint.Port(integerLiteral: portData.uint16!)
+
 
         port = p
 
