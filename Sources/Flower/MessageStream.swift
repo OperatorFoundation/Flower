@@ -16,7 +16,7 @@ import NetworkLinux
 
 extension Connection
 {
-    public func readMessages(handler: @escaping (Message) -> Void)
+    public func readMessage(handler: @escaping (Message) -> Void)
     {
         self.receive(minimumIncompleteLength: 2, maximumLength: 2)
         {
@@ -56,8 +56,19 @@ extension Connection
                 }
                 
                 handler(message)
-                self.readMessages(handler: handler)
+                
             })
+        }
+    }
+    
+    public func readMessages(handler: @escaping (Message) -> Void)
+    {
+        self.readMessage
+        {
+            (message) in
+            
+            handler(message)
+            self.readMessages(handler: handler)
         }
     }
 
