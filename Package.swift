@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
 name: "Flower",
     platforms: [
-       .macOS(.v10_15)
+       .macOS(.v11)
     ],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
@@ -16,8 +16,8 @@ name: "Flower",
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/OperatorFoundation/Datable", from: "3.0.3"),
-        .package(url: "https://github.com/OperatorFoundation/Transport", from: "2.2.1"),
+        .package(url: "https://github.com/OperatorFoundation/Datable", from: "3.0.4"),
+        .package(url: "https://github.com/OperatorFoundation/Transport", from: "2.3.4"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
