@@ -78,9 +78,12 @@ extension Connection
         let length = UInt16(data.count)
         let lengthData = length.data
         
+        print("writeMessage called send")
         self.send(content: lengthData, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
             {
                 (maybeLengthError) in
+                
+                print("writeMessage send callback called")
                 
                 if let lengthError = maybeLengthError
                 {
