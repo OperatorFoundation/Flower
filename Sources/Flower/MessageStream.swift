@@ -36,8 +36,8 @@ extension Connection
             }
             
             let length = Int(data.uint16!)
-            print(length)
-            print("LengthData: \(data.array)")
+            print("Read Length:\(length)")
+            print("Read LengthData: \(data.array)")
             self.receive(minimumIncompleteLength: length, maximumLength: length, completion:
             {
                 (maybeData, maybeContext, isComplete, maybeError) in
