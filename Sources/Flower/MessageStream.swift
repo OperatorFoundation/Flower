@@ -78,7 +78,9 @@ extension Connection
     {
         let data = message.data
         let length = UInt16(data.count)
+        print("writemessage length:\(length)")
         let lengthData = length.data
+        print("writemessage lengthData:\(lengthData.array)")
         
         print("writeMessage called send")
         self.send(content: lengthData, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
