@@ -18,10 +18,12 @@ extension Connection
 {
     public func readMessage(handler: @escaping (Message) -> Void)
     {
+        print("calling Flower receive function")
         self.receive(minimumIncompleteLength: 2, maximumLength: 2)
         {
             (maybeData, maybeContext, isComplete, maybeError) in
             
+            print("Flower receive called")
             if let error = maybeError
             {
                 print("Error when calling receive (message length) from readMessages: \(error)")

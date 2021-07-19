@@ -7,3 +7,4 @@
 *.xcuserstate
 .idea
 .swiftpm
+/build
