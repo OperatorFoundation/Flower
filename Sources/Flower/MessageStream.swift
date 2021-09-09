@@ -69,14 +69,14 @@ extension Connection
         }
     }
     
-    public func readMessages(handler: @escaping (Message) -> Void)
+    public func readMessages(log: Logger, handler: @escaping (Message) -> Void)
     {
-        self.readMessage
+        self.readMessage(log: log)
         {
             (message) in
             
             handler(message)
-            self.readMessages(handler: handler)
+            self.readMessages(log: log, handler: handler)
         }
     }
 
