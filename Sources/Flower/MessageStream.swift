@@ -41,6 +41,9 @@ extension Connection
             let length = Int(data.uint16!)
             self.debug(log: log, message: "Read Length:\(length)")
             self.debug(log: log, message: "Read LengthData: \(data.array)")
+            if length > 1600 {
+                self.debug(log: log, message: "Invalid message size: \(length)")
+            }
             self.receive(minimumIncompleteLength: length, maximumLength: length, completion:
             {
                 (maybeData, maybeContext, isComplete, maybeError) in
