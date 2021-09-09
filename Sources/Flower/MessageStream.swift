@@ -37,8 +37,12 @@ extension Connection
                 self.debug(log: log, message: "done receiving Flower message length data in readMessage")
                 return
             }
+            guard let uint16Length = UInt16(maybeNetworkData: data) else {
+                self.debug(log: log, message: "Unable to parse data as uint16 length")
+                return
+            }
+            let length = Int(uint16Length)
             
-            let length = Int(data.uint16!)
             self.debug(log: log, message: "Read Length:\(length)")
             self.debug(log: log, message: "Read LengthData: \(data.array)")
             if length > 1600 {
@@ -89,7 +93,11 @@ extension Connection
         let data = message.data
         let length = UInt16(data.count)
         self.debug(log: log, message: "writemessage length:\(length)")
-        let lengthData = length.data
+        guard let lengthData = length.maybeNetworkData else {
+            self.debug(log: log, message: "Error converting length to data.")
+            completion(NWError.posix(POSIXErrorCode.EINVAL))
+            return
+        }
         self.debug(log: log, message: "writemessage lengthData:\(lengthData.array)")
         
         self.debug(log: log, message: "writeMessage called send")
