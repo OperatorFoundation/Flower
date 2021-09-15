@@ -17,7 +17,7 @@ name: "Flower",
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/OperatorFoundation/Datable", from: "3.0.6"),
-        .package(url: "https://github.com/OperatorFoundation/Transport", from: "2.3.5"),
+        .package(url: "https://github.com/OperatorFoundation/Transport", from: "2.3.6"),
         .package(url: "https://github.com/apple/swift-log", from: "1.4.2")
     ],
     targets: [
