@@ -19,7 +19,6 @@ extension Connection
 {
     public func readMessage(log: Logger? = nil, handler: @escaping (Message) -> Void)
     {
-        DatableConfig.endianess = .big
         self.debug(log: log, message: "calling Flower receive function: \(type(of: self))")
         self.receive(minimumIncompleteLength: 2, maximumLength: 2)
         {
@@ -89,7 +88,6 @@ extension Connection
 
     public func writeMessage(log: Logger? = nil, message: Message, completion: @escaping (NWError?) -> Void)
     {
-        DatableConfig.endianess = .big
         let data = message.data
         let length = UInt16(data.count)
         self.debug(log: log, message: "writemessage length:\(length)")
