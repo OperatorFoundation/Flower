@@ -34,6 +34,16 @@ public class FlowerConnection
         }
     }
 
+    public func readMessage() -> Message?
+    {
+        return self.readMessageQueue.dequeue()
+    }
+
+    public func writeMessage(message: Message)
+    {
+        return self.writeMessageQueue.enqueue(message)
+    }
+
     func readMessages()
     {
         while true
