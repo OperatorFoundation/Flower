@@ -18,14 +18,15 @@ name: "Flower",
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/OperatorFoundation/Datable", from: "3.1.0"),
         .package(url: "https://github.com/OperatorFoundation/Transport", from: "2.3.7"),
-        .package(url: "https://github.com/apple/swift-log", from: "1.4.2")
+        .package(url: "https://github.com/apple/swift-log", from: "1.4.2"),
+        .package(url: "https://github.com/OperatorFoundation/SwiftQueue", from: "0.1.1"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "Flower",
-            dependencies: ["Datable", "Transport", .product(name: "Logging", package: "swift-log")]),
+            dependencies: ["Datable", "Transport", "SwiftQueue", .product(name: "Logging", package: "swift-log")]),
         .testTarget(
             name: "FlowerTests",
             dependencies: ["Flower"]),
