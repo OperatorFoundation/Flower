@@ -8,10 +8,11 @@
 import Foundation
 import Transport
 import SwiftQueue
+import Transmission
 
 public class FlowerConnection
 {
-    let connection: Transport.Connection
+    let connection: Transmission.Connection
 
     let readMessageQueue: Queue<Message> = Queue<Message>()
     let writeMessageQueue: Queue<Message> = Queue<Message>()
@@ -19,7 +20,7 @@ public class FlowerConnection
     let readQueue: DispatchQueue = DispatchQueue(label: "FlowerConnection.readMessages")
     let writeQueue: DispatchQueue = DispatchQueue(label: "FlowerConnection.writeMessages")
 
-    public init(connection: Transport.Connection)
+    public init(connection: Transmission.Connection)
     {
         self.connection = connection
 
