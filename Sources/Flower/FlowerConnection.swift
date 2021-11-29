@@ -9,13 +9,14 @@ import Foundation
 import Transport
 import SwiftQueue
 import Transmission
+import Chord
 
 public class FlowerConnection
 {
     let connection: Transmission.Connection
 
-    let readMessageQueue: Queue<Message> = Queue<Message>()
-    let writeMessageQueue: Queue<Message> = Queue<Message>()
+    let readMessageQueue: BlockingQueue<Message> = BlockingQueue<Message>()
+    let writeMessageQueue: BlockingQueue<Message> = BlockingQueue<Message>()
 
     let readQueue: DispatchQueue = DispatchQueue(label: "FlowerConnection.readMessages")
     let writeQueue: DispatchQueue = DispatchQueue(label: "FlowerConnection.writeMessages")
@@ -42,7 +43,7 @@ public class FlowerConnection
 
     public func writeMessage(message: Message)
     {
-        return self.writeMessageQueue.enqueue(message)
+        return self.writeMessageQueue.enqueue(element: message)
     }
 
     func readMessages()
@@ -51,7 +52,7 @@ public class FlowerConnection
         {
             guard let message = self.connection.readMessage() else {return}
 
-            self.readMessageQueue.enqueue(message)
+            self.readMessageQueue.enqueue(element: message)
         }
     }
 
@@ -59,7 +60,7 @@ public class FlowerConnection
     {
         while true
         {
-            guard let message = self.writeMessageQueue.dequeue() else {return}
+            let message = self.writeMessageQueue.dequeue()
 
             guard self.connection.writeMessage(message: message) else {return}
         }
