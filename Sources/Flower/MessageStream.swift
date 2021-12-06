@@ -15,7 +15,7 @@ extension Transmission.Connection
     public func readMessage(log: Logger? = nil) -> Message?
     {
         if let logger = log {
-            logger.error("flower read message reading size")
+            logger.debug("1: flower read message reading size")
         }
         
         guard let data = self.read(size: 2) else
@@ -47,7 +47,7 @@ extension Transmission.Connection
         }
 
         if let logger = log {
-            logger.error("flower read message reading message data (length: \(length))")
+            logger.debug("2: flower read message reading message data (length: \(length))")
         }
         
         guard let data = self.read(size: length) else
