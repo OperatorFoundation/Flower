@@ -29,6 +29,10 @@ extension Transmission.Connection
             return nil
         }
 
+        if let logger = log {
+            logger.debug("Flower Transmission Connection readMessage uint16Length: \(uint16Length)")
+        }
+        
         let length = Int(uint16Length)
 
         if length > 1600 {
