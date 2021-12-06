@@ -9,6 +9,7 @@ import Foundation
 import Datable
 import Logging
 import Transmission
+import SwiftHexTools
 
 extension Transmission.Connection
 {
@@ -26,6 +27,10 @@ extension Transmission.Connection
             return nil
         }
 
+        if let logger = log {
+            logger.debug("flower data: \(data.hex)")
+        }
+        
         guard let uint16Length = UInt16(maybeNetworkData: data) else {
             if let logger = log {
                 logger.error("flower failed to conver message length to UInt16")
