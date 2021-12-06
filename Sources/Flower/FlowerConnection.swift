@@ -54,7 +54,25 @@ public class FlowerConnection
     {
         while true
         {
-            guard let message = self.connection.readMessage(log: self.log) else {return}
+            guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
+            {
+                if let logger = log
+                {
+                    logger.error("flower failed to read data from connection")
+                }
+
+                return
+            }
+
+            guard let message = Message(data: data) else
+            {
+                if let logger = log
+                {
+                    logger.error("flower failed to parse data as message")
+                }
+
+                return
+            }
 
             self.readMessageQueue.enqueue(element: message)
         }
@@ -65,8 +83,17 @@ public class FlowerConnection
         while true
         {
             let message = self.writeMessageQueue.dequeue()
+            let data = message.data
 
-            guard self.connection.writeMessage(message: message) else {return}
+            guard self.connection.writeWithLengthPrefix(data: data, prefixSizeInBits: 16) else
+            {
+                if let logger = log
+                {
+                    logger.error("flower failed to write message")
+                }
+
+                return
+            }
         }
     }
 }
