@@ -10,6 +10,7 @@ import Transport
 import SwiftQueue
 import Transmission
 import Chord
+import Logging
 
 public class FlowerConnection
 {
@@ -20,11 +21,14 @@ public class FlowerConnection
 
     let readQueue: DispatchQueue = DispatchQueue(label: "FlowerConnection.readMessages")
     let writeQueue: DispatchQueue = DispatchQueue(label: "FlowerConnection.writeMessages")
+    
+    let log: Logger?
 
-    public init(connection: Transmission.Connection)
+    public init(connection: Transmission.Connection, log: Logger? = nil)
     {
         self.connection = connection
-
+        self.log = log
+        
         self.readQueue.async
         {
             self.readMessages()
@@ -50,7 +54,7 @@ public class FlowerConnection
     {
         while true
         {
-            guard let message = self.connection.readMessage() else {return}
+            guard let message = self.connection.readMessage(log: self.log) else {return}
 
             self.readMessageQueue.enqueue(element: message)
         }
