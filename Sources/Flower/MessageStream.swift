@@ -44,6 +44,15 @@ extension Transmission.Connection
         
         let length = Int(uint16Length)
 
+        // FIXME: Debugging only
+        if length == 0 {
+            if let extraData = self.read(size: 2) {
+                if let logger = log {
+                    logger.debug("extra data: \(extraData.hex)")
+                }
+            }
+        }
+        
         if length > 1600 {
             if let logger = log {
                 logger.error("flower read size too big")
