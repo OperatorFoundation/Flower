@@ -19,7 +19,7 @@ name: "Flower",
         .package(url: "https://github.com/OperatorFoundation/Datable", from: "3.1.5"),
         .package(url: "https://github.com/apple/swift-log", from: "1.4.2"),
         .package(url: "https://github.com/OperatorFoundation/SwiftQueue", from: "0.1.1"),
-        .package(url: "https://github.com/OperatorFoundation/Transmission", from: "1.2.4"),
+        .package(url: "https://github.com/OperatorFoundation/Transmission", from: "1.2.6"),
         .package(url: "https://github.com/OperatorFoundation/Chord", from: "0.0.15"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from: "1.2.5")
     ],
