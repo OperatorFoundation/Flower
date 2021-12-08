@@ -1,11 +1,9 @@
 import XCTest
 @testable import Flower
 import Datable
+import Transmission
 
 final class FlowerTests: XCTestCase {
-    func testExample() {
-    }
-
     func testUInt16() {
         let uint: UInt16 = 99
         let data = uint.data
@@ -13,8 +11,23 @@ final class FlowerTests: XCTestCase {
         let result = data.uint16
         XCTAssertEqual(uint, result)
     }
+
+    func testServer()
+    {
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
+
+        {
+            XCTFail()
+            return
+        }
+        
+        let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
+        let data = "a".data
+        let message = Message.IPDataV4(data)
+        flowerConnection.writeMessage(message: message)
+    }
     
     static var allTests = [
-        ("testExample", testExample),
+        ("testServer", testServer),
     ]
 }
