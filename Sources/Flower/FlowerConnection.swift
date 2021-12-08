@@ -11,6 +11,7 @@ import SwiftQueue
 import Transmission
 import Chord
 import Logging
+import SwiftHexTools
 
 public class FlowerConnection
 {
@@ -62,6 +63,11 @@ public class FlowerConnection
                 }
 
                 return
+            }
+
+            if let logger = log
+            {
+                logger.debug("read data \(data.hex)")
             }
 
             guard let message = Message(data: data) else

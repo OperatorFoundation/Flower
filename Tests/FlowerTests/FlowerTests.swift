@@ -24,7 +24,18 @@ final class FlowerTests: XCTestCase {
         let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
         let data = "a".data
         let message = Message.IPDataV4(data)
+
+        print("wrote")
+
         flowerConnection.writeMessage(message: message)
+
+        guard let ipAssign = flowerConnection.readMessage() else
+        {
+          XCTFail()
+          return
+        }
+
+        print("read")
     }
     
     static var allTests = [

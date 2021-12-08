@@ -20,7 +20,6 @@ name: "Flower",
         .package(url: "https://github.com/apple/swift-log", from: "1.4.2"),
         .package(url: "https://github.com/OperatorFoundation/SwiftQueue", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Transmission", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/Chord", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", branch: "main")
     ],
     targets: [
