@@ -32,6 +32,7 @@ public class FlowerConnection
         
         self.readQueue.async
         {
+            print("Flower starting readMessages queue")
             self.readMessages()
         }
 
