@@ -15,28 +15,53 @@ final class FlowerTests: XCTestCase {
 
     func testServer()
     {
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
-
+        let pongReceived: XCTestExpectation = XCTestExpectation(description: "pong received")
+        let newPacket = "45000054edfa00004001baf10A000001080808080800335dde64021860f5bcab0009db7808090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031323334353637"
+        
+        guard var pingPacket = Data(hex: newPacket) else
+        {
+            XCTFail()
+            return
+        }
+        
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "", port: 1234) else
         {
             XCTFail()
             return
         }
         
         let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
-        let data = "a".data
-        let message = Message.IPDataV4(data)
-
-        print("wrote")
-
-        flowerConnection.writeMessage(message: message)
+        
 
         guard let ipAssign = flowerConnection.readMessage() else
         {
           XCTFail()
           return
         }
-
-        print("read")
+        
+        switch ipAssign
+        {
+            case .IPAssignV4(let ipv4Address):
+                let addressData = ipv4Address.rawValue
+                let hackyByte = addressData[3]
+                pingPacket[15] = hackyByte // Some hackery to give the server our assigned IP
+            default:
+                XCTFail()
+                return
+        }
+        
+        
+        let message = Message.IPDataV4(pingPacket)
+        flowerConnection.writeMessage(message: message)
+        
+        guard let receivedMessage = flowerConnection.readMessage() else
+        {
+            XCTFail()
+            return
+        }
+        
+        pongReceived.fulfill()
+        wait(for: [pongReceived], timeout: 15) // 15 seconds
     }
 
     func testClientServer()
