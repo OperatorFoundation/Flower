@@ -102,6 +102,33 @@ final class FlowerTests: XCTestCase {
 
         wait(for: [serverRead], timeout: 30)
     }
+    
+    func testReplicantSwiftServer()
+    {
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "host", port: 1234) else
+
+        {
+            XCTFail()
+            return
+        }
+        
+        let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
+        let data = "a".data
+        let message = Message.IPDataV4(data)
+
+        print("wrote")
+
+        flowerConnection.writeMessage(message: message)
+
+        guard let ipAssign = flowerConnection.readMessage() else
+        {
+          XCTFail()
+          return
+        }
+
+        print(ipAssign)
+        print("read")
+    }
 
     static var allTests = [
         ("testServer", testServer),
