@@ -6,12 +6,10 @@
 //
 
 import Foundation
+
 import Datable
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-import Network
-#elseif os(Linux)
-import NetworkLinux
-#endif
+import Net
+
 
 enum AddressSize: Int
 {

@@ -24,7 +24,7 @@ final class FlowerTests: XCTestCase {
             return
         }
         
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
         {
             XCTFail()
             return
@@ -43,8 +43,12 @@ final class FlowerTests: XCTestCase {
         {
             case .IPAssignV4(let ipv4Address):
                 let addressData = ipv4Address.rawValue
-                let hackyByte = addressData[3]
-                pingPacket[15] = hackyByte // Some hackery to give the server our assigned IP
+                // Some hackery to give the server our assigned IP
+                pingPacket[15] = addressData[3]
+                pingPacket[14] = addressData[2]
+                pingPacket[13] = addressData[1]
+                pingPacket[12] = addressData[0]
+                
             default:
                 XCTFail()
                 return
