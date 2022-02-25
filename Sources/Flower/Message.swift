@@ -17,6 +17,12 @@ public enum MessageType: UInt8
     case IPAssignDualStackType = 8
     case IPDataV4Type = 9
     case IPDataV6Type = 10
+    case IPRequestV4Type = 11
+    case IPRequestV6Type = 12
+    case IPRequestDualStackType = 13
+    case IPReuseV4Type = 14
+    case IPReuseV6Type = 15
+    case IPReuseDualStackType = 16
 }
 
 public typealias StreamIdentifier = UInt64
@@ -113,6 +119,12 @@ public enum Message
     case IPAssignDualStack(IPv4Address, IPv6Address)
     case IPDataV4(Data)
     case IPDataV6(Data)
+    case IPRequestV4
+    case IPRequestV6
+    case IPRequestDualStack
+    case IPReuseV4(IPv4Address)
+    case IPReuseV6(IPv6Address)
+    case IPReuseDualStack(IPv4Address, IPv6Address)
 }
 
 extension Message: MaybeDatable
@@ -229,7 +241,37 @@ extension Message: MaybeDatable
                 guard let ipv6 = IPv6Address(data: ipv6Bytes) else {return nil}
             
                 self = .IPAssignDualStack(ipv4, ipv6)
-        }
+            case .IPRequestV4Type:
+                self = .IPRequestV4
+            case .IPRequestV6Type:
+                self = .IPRequestV6
+            case .IPRequestDualStackType:
+                self = .IPRequestDualStack
+            case .IPReuseV4Type:
+                guard let ip = IPv4Address(data: tail) else
+                {
+                    return nil
+                }
+
+                self = .IPReuseV4(ip)
+            case .IPReuseV6Type:
+                guard let ip = IPv6Address(data: tail) else
+                {
+                    return nil
+                }
+
+                self = .IPReuseV6(ip)
+            case .IPReuseDualStackType:
+                guard let (ipv4Bytes, ipv6Bytes) = tail.splitOn(position: UInt(AddressSize.v4.rawValue)) else
+                {
+                    return nil
+                }
+
+                guard let ipv4 = IPv4Address(data: ipv4Bytes) else {return nil}
+                guard let ipv6 = IPv6Address(data: ipv6Bytes) else {return nil}
+
+                self = .IPReuseDualStack(ipv4, ipv6)
+         }
     }
     
     public var data: Data {
@@ -272,6 +314,22 @@ extension Message: MaybeDatable
                 result.append(MessageType.IPAssignV4Type.rawValue)
                 result.append(ip.data)
             case .IPAssignDualStack(let ipv4, let ipv6):
+                result.append(MessageType.IPAssignDualStackType.rawValue)
+                result.append(ipv4.data)
+                result.append(ipv6.data)
+            case .IPRequestV4:
+                result.append(MessageType.IPRequestV4Type.rawValue)
+            case .IPRequestV6:
+                result.append(MessageType.IPRequestV6Type.rawValue)
+            case .IPRequestDualStack:
+                result.append(MessageType.IPRequestDualStackType.rawValue)
+            case .IPReuseV4(let ip):
+                result.append(MessageType.IPAssignV4Type.rawValue)
+                result.append(ip.data)
+            case .IPReuseV6(let ip):
+                result.append(MessageType.IPAssignV4Type.rawValue)
+                result.append(ip.data)
+            case .IPReuseDualStack(let ipv4, let ipv6):
                 result.append(MessageType.IPAssignDualStackType.rawValue)
                 result.append(ipv4.data)
                 result.append(ipv6.data)
@@ -347,8 +405,34 @@ extension Message: CustomStringConvertible
                 endpointV6: \(endpointV6)
                 data: \(data)
                 """
+            case .IPRequestV4:
+                return """
+                IPRequestV4
+                """
+            case .IPRequestV6:
+                return """
+                IPRequestV6
+                """
+            case .IPRequestDualStack:
+                return """
+                IPRequestDualStack
+                """
+            case .IPReuseV4(let ipv4Address):
+                return """
+                IPReuseV4
+                IP: \(ipv4Address)
+                """
+            case .IPReuseV6(let ipv6Address):
+                return """
+                IPReuseV6
+                ip: \(ipv6Address)
+                """
+            case .IPReuseDualStack(let ipv4Address, let ipv6Address):
+                return """
+                IPReuseDualStack
+                IPv4: \(ipv4Address)
+                IPv6: \(ipv6Address)
+                """
         }
     }
-    
-    
 }

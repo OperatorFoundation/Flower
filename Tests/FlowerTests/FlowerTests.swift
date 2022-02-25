@@ -4,8 +4,10 @@ import Datable
 import Transmission
 import Logging
 
-final class FlowerTests: XCTestCase {
-    func testUInt16() {
+final class FlowerTests: XCTestCase
+{
+    func testUInt16()
+    {
         let uint: UInt16 = 99
         let data = uint.data
         print(data.array)
@@ -223,6 +225,59 @@ final class FlowerTests: XCTestCase {
     }
     
     func testServerUDP2()
+    {
+        let pongReceived: XCTestExpectation = XCTestExpectation(description: "pong received")
+        let newPacket = "45000054edfa00004001baf10A000001080808080800335dde64021860f5bcab0009db7808090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031323334353637"
+        
+        guard var pingPacket = Data(hex: newPacket) else
+        {
+            XCTFail()
+            return
+        }
+        
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
+        {
+            XCTFail()
+            return
+        }
+        
+        let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
+        
+
+        guard let ipAssign = flowerConnection.readMessage() else
+        {
+          XCTFail()
+          return
+        }
+        
+        switch ipAssign
+        {
+            case .IPAssignV4(let ipv4Address):
+                let addressData = ipv4Address.rawValue
+                pingPacket[15] = addressData[3] // Some hackery to give the server our assigned IP
+                pingPacket[14] = addressData[2]
+                pingPacket[13] = addressData[1]
+                pingPacket[12] = addressData[0]
+            default:
+                XCTFail()
+                return
+        }
+        
+        
+        let message = Message.IPDataV4(pingPacket)
+        flowerConnection.writeMessage(message: message)
+        
+        guard let receivedMessage = flowerConnection.readMessage() else
+        {
+            XCTFail()
+            return
+        }
+        
+        pongReceived.fulfill()
+        wait(for: [pongReceived], timeout: 15) // 15 seconds
+    }
+    
+    func testServerUDP3()
     {
         let pongReceived: XCTestExpectation = XCTestExpectation(description: "pong received")
         let newPacket = "450000258ad100004011ef41c0a801e79fcb9e5adf5104d200115d4268656c6c6f6f6f6f0a"
