@@ -23,6 +23,8 @@ public enum MessageType: UInt8
     case IPReuseV4Type = 14
     case IPReuseV6Type = 15
     case IPReuseDualStackType = 16
+    case ICMPDataV4Type = 17
+    case ICMPDataV6Type = 18
 }
 
 public typealias StreamIdentifier = UInt64
@@ -125,6 +127,8 @@ public enum Message
     case IPReuseV4(IPv4Address)
     case IPReuseV6(IPv6Address)
     case IPReuseDualStack(IPv4Address, IPv6Address)
+    case ICMPDataV4(IPv4Address, Data)
+    case ICMPDataV6(IPv6Address, Data)
 }
 
 extension Message: MaybeDatable
@@ -271,6 +275,24 @@ extension Message: MaybeDatable
                 guard let ipv6 = IPv6Address(data: ipv6Bytes) else {return nil}
 
                 self = .IPReuseDualStack(ipv4, ipv6)
+            case .ICMPDataV4Type:
+                guard let (ipv4Bytes, data) = tail.splitOn(position: UInt(AddressSize.v4.rawValue)) else
+                {
+                    return nil
+                }
+
+                guard let ipv4 = IPv4Address(data: ipv4Bytes) else {return nil}
+
+                self = .ICMPDataV4(ipv4, data)
+            case .ICMPDataV6Type:
+                guard let (ipv6Bytes, data) = tail.splitOn(position: UInt(AddressSize.v6.rawValue)) else
+                {
+                    return nil
+                }
+
+                guard let ipv6 = IPv6Address(data: ipv6Bytes) else {return nil}
+
+                self = .ICMPDataV6(ipv6, data)
          }
     }
     
@@ -333,6 +355,14 @@ extension Message: MaybeDatable
                 result.append(MessageType.IPAssignDualStackType.rawValue)
                 result.append(ipv4.data)
                 result.append(ipv6.data)
+            case .ICMPDataV4(let ipv4, let payload):
+                result.append(MessageType.ICMPDataV4Type.rawValue)
+                result.append(ipv4.data)
+                result.append(payload)
+            case .ICMPDataV6(let ipv6, let payload):
+                result.append(MessageType.ICMPDataV6Type.rawValue)
+                result.append(ipv6.data)
+                result.append(payload)
         }
         
         return result
@@ -432,6 +462,18 @@ extension Message: CustomStringConvertible
                 IPReuseDualStack
                 IPv4: \(ipv4Address)
                 IPv6: \(ipv6Address)
+                """
+            case .ICMPDataV4(let ipv4Address, let data):
+                return """
+                ICMPDataV4
+                IPv4: \(ipv4Address)
+                Data: \(data)
+                """
+            case .ICMPDataV6(let ipv6Address, let data):
+                return """
+                ICMPDataV6
+                IPv6: \(ipv6Address)
+                Data: \(data)
                 """
         }
     }
