@@ -68,9 +68,9 @@ final class FlowerTests: XCTestCase
         wait(for: [pongReceived], timeout: 15) // 15 seconds
     }
 
-    func testServerUDP()
+    func testServerUDPLocal()
     {
-        let newPacket = "45000022231b0000401135c7c0a8016ba747b88edb3004d2000eba0968656c6c6f0a"
+        let newPacket = "45000021cbcb0000401100007f0000017f000001de1b04d2000dfe20746573740a"
         
         guard var pingPacket = Data(hex: newPacket) else
         {
@@ -78,7 +78,7 @@ final class FlowerTests: XCTestCase
             return
         }
         
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "206.189.200.18", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
         {
             XCTFail()
             return
@@ -86,7 +86,10 @@ final class FlowerTests: XCTestCase
         
         let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
         
-
+        // make IP request
+        let ipRequest = Message.IPRequestV4
+        flowerConnection.writeMessage(message: ipRequest)
+        
         guard let ipAssign = flowerConnection.readMessage() else
         {
           XCTFail()
