@@ -281,14 +281,15 @@ final class FlowerTests: XCTestCase
     {
         let pongReceived: XCTestExpectation = XCTestExpectation(description: "pong received")
         let newPacket = "450000258ad100004011ef41c0a801e79fcb9e5adf5104d200115d4268656c6c6f6f6f6f0a"
-        
+
         guard var pingPacket = Data(hex: newPacket) else
         {
             XCTFail()
             return
         }
         
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
+//        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
         {
             XCTFail()
             return
@@ -296,13 +297,15 @@ final class FlowerTests: XCTestCase
         
         let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
         
+        var message = Message.IPRequestV4
+        flowerConnection.writeMessage(message: message)
 
         guard let ipAssign = flowerConnection.readMessage() else
         {
           XCTFail()
           return
         }
-        
+
         switch ipAssign
         {
             case .IPAssignV4(let ipv4Address):
@@ -319,7 +322,7 @@ final class FlowerTests: XCTestCase
         }
         
         
-        let message = Message.IPDataV4(pingPacket)
+        message = Message.IPDataV4(pingPacket)
         flowerConnection.writeMessage(message: message)
         
         guard let receivedMessage = flowerConnection.readMessage() else
