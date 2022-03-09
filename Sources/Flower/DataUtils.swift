@@ -11,6 +11,11 @@ extension Data
 {
     public func splitOn(position: UInt) -> (Data, Data)?
     {
+        guard self.count > position else
+        {
+            return nil
+        }
+
         let headSlice = self[0..<position]
         let head = Data(headSlice)
         

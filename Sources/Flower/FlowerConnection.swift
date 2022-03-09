@@ -60,7 +60,8 @@ public class FlowerConnection
             {
                 if let logger = log
                 {
-                    logger.error("flower failed to read data from connection")
+                    logger.info("FlowerConnection.readMessages: flower connection was closed by other side")
+                    logger.info("FlowerConnection.readMessages: closing flower connection")
                 }
 
                 return
@@ -96,7 +97,8 @@ public class FlowerConnection
             {
                 if let logger = log
                 {
-                    logger.error("flower failed to write message")
+                    logger.info("FlowerConnection.writeMessages: flower connection was closed by other side")
+                    logger.info("FlowerConnection.writeMessages: closing flower connection")
                 }
 
                 return

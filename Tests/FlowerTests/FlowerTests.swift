@@ -283,7 +283,8 @@ final class FlowerTests: XCTestCase
     func testServerUDP3()
     {
         let pongReceived: XCTestExpectation = XCTestExpectation(description: "pong received")
-        let newPacket = "450000258ad100004011ef41c0a801e79fcb9e5adf5104d200115d4268656c6c6f6f6f6f0a"
+//        let newPacket = "450000258ad100004011ef41c0a801e79fcb9e5adf5104d200115d4268656c6c6f6f6f6f0a"
+        let newPacket = "45000021cbcb0000401100007f0000017f000001de1b04d2000dfe20746573740a"
 
         guard var pingPacket = Data(hex: newPacket) else
         {
