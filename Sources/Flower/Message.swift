@@ -296,7 +296,8 @@ extension Message: MaybeDatable
          }
     }
     
-    public var data: Data {
+    public var data: Data
+    {
         var result = Data()
         switch self
         {
