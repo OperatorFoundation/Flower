@@ -20,9 +20,10 @@ public class FlowerListener
         self.listener = listener
     }
 
-    public func accept() -> FlowerConnection
+    public func accept() throws -> FlowerConnection
     {
-        let connection = self.listener.accept()
+        let connection = try self.listener.accept()
+        
         return FlowerConnection(connection: connection, log: self.logger)
     }
 }

@@ -180,11 +180,22 @@ final class FlowerTests: XCTestCase
             let flowerListener = FlowerListener(listener: networkListener, logger: logger)
             lock.leave()
 
-            let flowerConnection = flowerListener.accept()
-            flowerConnection.writeMessage(message: .IPDataV4("server".data))
-            let message = flowerConnection.readMessage()
-            serverRead.fulfill()
+            do
+            {
+                let flowerConnection = try flowerListener.accept()
+                flowerConnection.writeMessage(message: .IPDataV4("server".data))
+                let message = flowerConnection.readMessage()
+                serverRead.fulfill()
+            }
+            catch
+            {
+                print(error)
+                XCTFail()
+            }
+            
+            return
         }
+        
         lock.wait()
 
         guard let networkConnection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
