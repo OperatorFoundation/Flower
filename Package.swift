@@ -17,10 +17,11 @@ name: "Flower",
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/OperatorFoundation/Datable", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/InternetProtocols", branch: "main"),
         .package(url: "https://github.com/apple/swift-log", from: "1.4.2"),
+        .package(url: "https://github.com/OperatorFoundation/SwiftHexTools", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/SwiftQueue", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Transmission", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", branch: "main")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -30,7 +31,7 @@ name: "Flower",
             dependencies: ["Datable", "SwiftQueue", "Transmission", "SwiftHexTools", .product(name: "Logging", package: "swift-log")]),
         .testTarget(
             name: "FlowerTests",
-            dependencies: ["Flower", "Transmission"]),
+            dependencies: ["Flower", "InternetProtocols", "Transmission"]),
     ],
     swiftLanguageVersions: [.v5]
 )
