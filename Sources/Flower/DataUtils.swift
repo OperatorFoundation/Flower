@@ -11,17 +11,25 @@ extension Data
 {
     public func splitOn(position: UInt) -> (Data, Data)?
     {
-        guard self.count > position else
+        guard self.count >= position else
         {
             return nil
         }
 
         let headSlice = self[0..<position]
         let head = Data(headSlice)
-        
-        let tailSlice = self[position...]
-        let tail = Data(tailSlice)
-        
+
+        let tail: Data
+        if self.count == position
+        {
+            tail = Data()
+        }
+        else
+        {
+            let tailSlice = self[position...]
+            tail = Data(tailSlice)
+        }
+
         return (head, tail)
     }
 }
