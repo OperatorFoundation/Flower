@@ -380,12 +380,13 @@ final class FlowerTests: XCTestCase
                     }
                     else
                     {
-                        print("Not UDP")
+                        print("No payload")
+                        print(data.hex)
                     }
                 }
                 else
                 {
-                    print("Not IPv4")
+                    print("Not UDP")
                 }
             default:
                 print("Unknown message \(receivedMessage)")
