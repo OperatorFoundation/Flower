@@ -296,13 +296,13 @@ final class FlowerTests: XCTestCase
     func testServerUDP3()
     {
         let pongReceived: XCTestExpectation = XCTestExpectation(description: "pong received")
-//        let newPacket = "450000258ad100004011ef41c0a801e79fcb9e5adf5104d200115d4268656c6c6f6f6f6f0a"
+        let newPacket = "450000258ad100004011ef41c0a801e79fcb9e5adf5104d200115d4268656c6c6f6f6f6f0a"
 
-//        guard var pingPacket = Data(hex: newPacket) else
-//        {
-//            XCTFail()
-//            return
-//        }
+        guard var pingPacket = Data(hex: newPacket) else
+        {
+            XCTFail()
+            return
+        }
         
 //        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
         guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
@@ -325,19 +325,31 @@ final class FlowerTests: XCTestCase
         switch ipAssign
         {
             case .IPAssignV4(let ipv4Address):
-                guard let udp = UDP(sourcePort: 4567, destinationPort: 5678, payload: "test".data) else
-                {
-                    XCTFail()
-                    return
-                }
+//                guard let udp = UDP(sourcePort: 4567, destinationPort: 5678, payload: "test".data) else
+//                {
+//                    XCTFail()
+//                    return
+//                }
+//
+//                guard let ipv4 = try? IPv4(sourceAddress: IPv4Address("127.0.0.1")!, destinationAddress: ipv4Address, payload: udp.data, protocolNumber: IPprotocolNumber.UDP) else
+//                {
+//                    XCTFail()
+//                    return
+//                }
+//
+//                let pingPacket = ipv4.data
 
-                guard let ipv4 = try? IPv4(sourceAddress: IPv4Address("127.0.0.1")!, destinationAddress: ipv4Address, payload: udp.data, protocolNumber: IPprotocolNumber.UDP) else
-                {
-                    XCTFail()
-                    return
-                }
+                let addressData = ipv4Address.rawValue
+                // Some hackery to give the server our assigned IP
+                pingPacket[15] = addressData[3]
+                pingPacket[14] = addressData[2]
+                pingPacket[13] = addressData[1]
+                pingPacket[12] = addressData[0]
 
-                let pingPacket = ipv4.data
+                pingPacket[16] = 127
+                pingPacket[17] = 0
+                pingPacket[18] = 0
+                pingPacket[19] = 1
 
                 message = Message.IPDataV4(pingPacket)
                 flowerConnection.writeMessage(message: message)
@@ -352,7 +364,35 @@ final class FlowerTests: XCTestCase
             XCTFail()
             return
         }
-        
+
+        print(receivedMessage)
+
+        switch receivedMessage
+        {
+            case .IPDataV4(let data):
+                let packet = Packet(ipv4Bytes: data, timestamp: Date(), debugPrints: true)
+                print(packet)
+                if let udp = packet.udp
+                {
+                    if let payload = udp.payload
+                    {
+                        print(payload.string)
+                    }
+                    else
+                    {
+                        print("Not UDP")
+                    }
+                }
+                else
+                {
+                    print("Not IPv4")
+                }
+            default:
+                print("Unknown message \(receivedMessage)")
+                XCTFail()
+                return
+        }
+
         pongReceived.fulfill()
         wait(for: [pongReceived], timeout: 15) // 15 seconds
     }

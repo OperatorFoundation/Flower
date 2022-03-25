@@ -15,7 +15,7 @@ import SwiftHexTools
 
 public class FlowerConnection
 {
-    let connection: Transmission.Connection
+    public let connection: Transmission.Connection
 
     let readMessageQueue: BlockingQueue<Message> = BlockingQueue<Message>()
     let writeMessageQueue: BlockingQueue<Message> = BlockingQueue<Message>()
