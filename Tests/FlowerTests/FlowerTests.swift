@@ -292,7 +292,15 @@ final class FlowerTests: XCTestCase
         pongReceived.fulfill()
         wait(for: [pongReceived], timeout: 15) // 15 seconds
     }
-    
+
+    // To run this test, you need a netcat running on the same machine as the Persona server
+    // nc -k -u -l 1234
+    // This nc only lasts for one test, and then you will need to restart it.
+    // On the nc, you should see "helloooo"
+    // After that, type something back into the netcat
+    // This should be routed through Persona back to the FlowerTest, and then the FlowerTest should succeed.
+    // You might need to change the host for the TransmissionConnection if you are running the Persona server on Digital Ocean.
+    // For instance, if you are running a similar test on Android then you cannot use 127.0.0.1 for a server host.
     func testServerUDP3()
     {
         let pongReceived: XCTestExpectation = XCTestExpectation(description: "pong received")
