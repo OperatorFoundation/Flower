@@ -115,6 +115,14 @@ final class FlowerTests: XCTestCase
         let message = Message.IPDataV4(pingPacket)
         flowerConnection.writeMessage(message: message)
 
+        guard let receiveMessage = flowerConnection.readMessage() else
+        {
+          XCTFail()
+          return
+        }
+        
+        print(receiveMessage)
+        
         Thread.sleep(forTimeInterval: 1)
     }
 
