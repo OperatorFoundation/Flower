@@ -414,7 +414,122 @@ final class FlowerTests: XCTestCase
         wait(for: [pongReceived], timeout: 15) // 15 seconds
     }
 
+    // To run this test, you need a netcat running on the same machine as the Persona server
+    // nc -k -l 5678
+    // This nc only lasts for one test, and then you will need to restart it.
+    // On the nc, you should see "helloooo"
+    // After that, type something back into the netcat
+    // This should be routed through Persona back to the FlowerTest, and then the FlowerTest should succeed.
+    // You might need to change the host for the TransmissionConnection if you are running the Persona server on Digital Ocean.
+    // For instance, if you are running a similar test on Android then you cannot use 127.0.0.1 for a server host.
+    func testServerTCP3()
+    {
+        let pongReceived: XCTestExpectation = XCTestExpectation(description: "pong received")
+        let newPacket = "4500004000004000400600007f0000017f000001c87f162e8ea91a7500000000b002fffffe34000002043fd8010303060101080abdd993230000000004020000"
+
+        guard var pingPacket = Data(hex: newPacket) else
+        {
+            XCTFail()
+            return
+        }
+        
+    //        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
+        {
+            XCTFail()
+            return
+        }
+        
+        let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
+        
+        var message = Message.IPRequestV4
+        flowerConnection.writeMessage(message: message)
+
+        guard let ipAssign = flowerConnection.readMessage() else
+        {
+          XCTFail()
+          return
+        }
+
+        switch ipAssign
+        {
+            case .IPAssignV4(let ipv4Address):
+    //                guard let udp = UDP(sourcePort: 4567, destinationPort: 5678, payload: "test".data) else
+    //                {
+    //                    XCTFail()
+    //                    return
+    //                }
+    //
+    //                guard let ipv4 = try? IPv4(sourceAddress: IPv4Address("127.0.0.1")!, destinationAddress: ipv4Address, payload: udp.data, protocolNumber: IPprotocolNumber.UDP) else
+    //                {
+    //                    XCTFail()
+    //                    return
+    //                }
+    //
+    //                let pingPacket = ipv4.data
+
+                let addressData = ipv4Address.rawValue
+                // Some hackery to give the server our assigned IP
+                pingPacket[15] = addressData[3]
+                pingPacket[14] = addressData[2]
+                pingPacket[13] = addressData[1]
+                pingPacket[12] = addressData[0]
+
+                pingPacket[16] = 127
+                pingPacket[17] = 0
+                pingPacket[18] = 0
+                pingPacket[19] = 1
+
+                message = Message.IPDataV4(pingPacket)
+                flowerConnection.writeMessage(message: message)
+
+            default:
+                XCTFail()
+                return
+        }
+
+        guard let receivedMessage = flowerConnection.readMessage() else
+        {
+            XCTFail()
+            return
+        }
+
+        print(receivedMessage)
+
+        switch receivedMessage
+        {
+            case .IPDataV4(let data):
+                let packet = Packet(ipv4Bytes: data, timestamp: Date(), debugPrints: true)
+                print(packet)
+                if let tcp = packet.tcp
+                {
+                    if let payload = tcp.payload
+                    {
+                        print(payload.string)
+                    }
+                    else
+                    {
+                        print("No payload")
+                        print(data.hex)
+                    }
+                }
+                else
+                {
+                    print("Not TCP")
+                }
+            default:
+                print("Unknown message \(receivedMessage)")
+                XCTFail()
+                return
+        }
+
+        pongReceived.fulfill()
+        wait(for: [pongReceived], timeout: 15) // 15 seconds
+    }
+    
     static var allTests = [
         ("testServer", testServer),
     ]
 }
+
+
