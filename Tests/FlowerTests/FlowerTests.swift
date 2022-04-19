@@ -321,7 +321,7 @@ final class FlowerTests: XCTestCase
         }
         
 //        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "164.92.71.230", port: 1234) else
         {
             XCTFail()
             return

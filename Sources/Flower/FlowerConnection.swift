@@ -27,6 +27,7 @@ public class FlowerConnection
 
     public init(connection: Transmission.Connection, log: Logger? = nil)
     {
+        print("🌷 FlowerConnection init called. 🌷")
         self.connection = connection
         self.log = log
         
