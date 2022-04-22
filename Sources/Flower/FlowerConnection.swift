@@ -33,12 +33,13 @@ public class FlowerConnection
         
         self.readQueue.async
         {
-            print("Flower starting readMessages queue")
+            print("🌷 FlowerConnection starting readMessages queue")
             self.readMessages()
         }
 
         self.writeQueue.async
         {
+            print("🌷 FlowerConnection starting writeMessages queue")
             self.writeMessages()
         }
     }
@@ -59,27 +60,21 @@ public class FlowerConnection
         {
             guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
             {
-                if let logger = log
-                {
-                    logger.info("FlowerConnection.readMessages: flower connection was closed by other side")
-                    logger.info("FlowerConnection.readMessages: closing flower connection")
-                }
+                log?.info("FlowerConnection.readMessages: flower connection was closed by other side")
+                log?.info("FlowerConnection.readMessages: closing flower connection")
+                print("FlowerConnection.readMessages: flower connection was closed by other side")
 
                 return
             }
 
-            if let logger = log
-            {
-                logger.debug("read data \(data.hex)")
-            }
+            log?.debug("FlowerConnection.readMessages: read data \(data.hex)")
+            print("FlowerConnection.readMessages: read data \(data.hex)")
 
             guard let message = Message(data: data) else
             {
-                if let logger = log
-                {
-                    logger.error("flower failed to parse data as message")
-                }
-
+                log?.error("flower failed to parse data as message")
+                print("flower failed to parse data as message")
+                
                 return
             }
 
@@ -94,13 +89,13 @@ public class FlowerConnection
             let message = self.writeMessageQueue.dequeue()
             let data = message.data
 
+            print("FlowerConnection.writeMessages: writing a message: \(message.description)")
+            
             guard self.connection.writeWithLengthPrefix(data: data, prefixSizeInBits: 16) else
             {
-                if let logger = log
-                {
-                    logger.info("FlowerConnection.writeMessages: flower connection was closed by other side")
-                    logger.info("FlowerConnection.writeMessages: closing flower connection")
-                }
+                log?.info("FlowerConnection.writeMessages: flower connection was closed by other side")
+                log?.info("FlowerConnection.writeMessages: closing flower connection")
+                print("FlowerConnection.writeMessages: flower connection was closed by other side")
 
                 return
             }
