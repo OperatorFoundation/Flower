@@ -56,6 +56,7 @@ public class FlowerConnection
 
     func readMessages()
     {
+        print("FlowerConnection.readMessages() called")
         while true
         {
             guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
