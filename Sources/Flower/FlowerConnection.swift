@@ -51,6 +51,7 @@ public class FlowerConnection
 
     public func writeMessage(message: Message)
     {
+        print("FlowerConnection.writeMessage: enqueueing \(message)")
         return self.writeMessageQueue.enqueue(element: message)
     }
 
