@@ -15,8 +15,8 @@ import SwiftHexTools
 
 public class FlowerConnection
 {
-    public var writeLog: Data?
-    public var readLog: Data?
+    public var writeLog: [Data]?
+    public var readLog: [Data]?
 
     public let connection: Transmission.Connection
 
@@ -37,12 +37,12 @@ public class FlowerConnection
 
         if logReads
         {
-            readLog = Data()
+            readLog = []
         }
 
         if logWrites
         {
-            writeLog = Data()
+            writeLog = []
         }
         
         self.readQueue.async
