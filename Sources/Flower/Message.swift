@@ -38,11 +38,19 @@ public func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UIn
     return UInt64(hasher.finalize())
 }
 
-public struct EndpointV4: MaybeDatable, Hashable
+public struct EndpointV4: MaybeDatable, Hashable, Comparable
 {
     public let host: IPv4Address
     public let port: NWEndpoint.Port
 
+    public var data: Data
+    {
+        var result = Data()
+        result.append(port.data)
+        result.append(host.data)
+        return result
+    }
+    
     public init(host: IPv4Address, port: NWEndpoint.Port)
     {
         self.host = host
@@ -68,6 +76,28 @@ public struct EndpointV4: MaybeDatable, Hashable
         host = address
     }
     
+    public static func < (lhs: EndpointV4, rhs: EndpointV4) -> Bool
+    {
+        if lhs.host.rawValue.lexicographicallyPrecedes(rhs.host.rawValue)
+        {
+            return true
+        }
+        else if rhs.host.rawValue.lexicographicallyPrecedes(lhs.host.rawValue)
+        {
+            return false
+        }
+        else
+        {
+            return lhs.port.rawValue < rhs.port.rawValue
+        }
+    }
+}
+
+public struct EndpointV6: MaybeDatable, Hashable, Comparable
+{
+    public let host: IPv6Address
+    public let port: NWEndpoint.Port
+    
     public var data: Data
     {
         var result = Data()
@@ -75,13 +105,7 @@ public struct EndpointV4: MaybeDatable, Hashable
         result.append(host.data)
         return result
     }
-}
-
-public struct EndpointV6: MaybeDatable, Hashable
-{
-    public let host: IPv6Address
-    public let port: NWEndpoint.Port
-
+    
     public init(host: IPv6Address, port: NWEndpoint.Port)
     {
         self.host = host
@@ -107,14 +131,23 @@ public struct EndpointV6: MaybeDatable, Hashable
 
         host = address
     }
-
-    public var data: Data
+    
+    public static func < (lhs: EndpointV6, rhs: EndpointV6) -> Bool
     {
-        var result = Data()
-        result.append(port.data)
-        result.append(host.data)
-        return result
+        if lhs.host.rawValue.lexicographicallyPrecedes(rhs.host.rawValue)
+        {
+            return true
+        }
+        else if rhs.host.rawValue.lexicographicallyPrecedes(lhs.host.rawValue)
+        {
+            return false
+        }
+        else
+        {
+            return lhs.port.rawValue < rhs.port.rawValue
+        }
     }
+    
 }
 
 public enum Message
