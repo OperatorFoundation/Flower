@@ -85,7 +85,7 @@ public class FlowerConnection
     func readMessages()
     {
         print("FlowerConnection.readMessages() called")
-        while true
+        while self.open
         {
             guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
             {
@@ -122,7 +122,7 @@ public class FlowerConnection
 
     func writeMessages()
     {
-        while true
+        while self.open
         {
             let message = self.writeMessageQueue.dequeue()
             let data = message.data
