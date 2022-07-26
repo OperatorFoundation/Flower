@@ -60,7 +60,7 @@ final class FlowerTests: XCTestCase
         let message = Message.IPDataV4(pingPacket)
         flowerConnection.writeMessage(message: message)
         
-        guard let receivedMessage = flowerConnection.readMessage() else
+        guard flowerConnection.readMessage() != nil else
         {
             XCTFail()
             return
@@ -194,7 +194,7 @@ final class FlowerTests: XCTestCase
             {
                 let flowerConnection = try flowerListener.accept()
                 flowerConnection.writeMessage(message: .IPDataV4("server".data))
-                let message = flowerConnection.readMessage()
+                _ = flowerConnection.readMessage()
                 serverRead.fulfill()
             }
             catch
@@ -216,7 +216,7 @@ final class FlowerTests: XCTestCase
 
         let flowerConnection = FlowerConnection(connection: networkConnection, log: logger)
         flowerConnection.writeMessage(message: .IPDataV4("client".data))
-        let message = flowerConnection.readMessage()
+        _ = flowerConnection.readMessage()
 
         wait(for: [serverRead], timeout: 30)
     }
@@ -291,7 +291,7 @@ final class FlowerTests: XCTestCase
         let message = Message.IPDataV4(pingPacket)
         flowerConnection.writeMessage(message: message)
         
-        guard let receivedMessage = flowerConnection.readMessage() else
+        guard flowerConnection.readMessage() != nil else
         {
             XCTFail()
             return

@@ -29,7 +29,16 @@ public enum MessageType: UInt8
 
 public typealias StreamIdentifier = UInt64
 
-public struct EndpointV4: MaybeDatable
+func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UInt64
+{
+    var hasher = Hasher()
+    hasher.combine(source)
+    hasher.combine(destination)
+    
+    return UInt64(hasher.finalize())
+}
+
+public struct EndpointV4: MaybeDatable, Hashable
 {
     public let host: IPv4Address
     public let port: NWEndpoint.Port
@@ -68,7 +77,7 @@ public struct EndpointV4: MaybeDatable
     }
 }
 
-public struct EndpointV6: MaybeDatable
+public struct EndpointV6: MaybeDatable, Hashable
 {
     public let host: IPv6Address
     public let port: NWEndpoint.Port
