@@ -29,7 +29,7 @@ public enum MessageType: UInt8
 
 public typealias StreamIdentifier = UInt64
 
-func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UInt64
+public func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UInt64
 {
     var hasher = Hasher()
     hasher.combine(source)
