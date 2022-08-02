@@ -33,14 +33,25 @@ public typealias StreamIdentifier = UInt64
 public func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UInt64
 {
     var sha512 = SHA512()
-    sha512.update(data: source.data)
-    sha512.update(data: destination.data)
+    
+    if (source < destination)
+    {
+        sha512.update(data: source.data)
+        sha512.update(data: destination.data)
+    }
+    else
+    {
+        sha512.update(data: destination.data)
+        sha512.update(data: source.data)
+    }
+    
     let hashValue = sha512.finalize()
     let hashData = Data(hashValue)
+    let firstEight = Data(hashData[..<8])
     print("Generating a stream id with \(hashData.count) bytes: \(hashData.hex)")
 
     // Force unwrap performed under duress
-    return hashData.maybeNetworkUint64!
+    return firstEight.maybeNetworkUint64!
 }
 
 public struct EndpointV4: MaybeDatable, Hashable, Comparable
