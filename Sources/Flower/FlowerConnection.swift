@@ -100,10 +100,7 @@ public class FlowerConnection
                 return
             }
 
-            if var rlog = readLog
-            {
-                rlog.append(data)
-            }
+            readLog?.append(data)
 
 //            log?.debug("FlowerConnection.readMessages: read data \(data.hex)")
 //            print("FlowerConnection.readMessages: read data \(data.hex)")
@@ -115,7 +112,7 @@ public class FlowerConnection
                 
                 if let rLog = readLog
                 {
-                    print("Read log: ")
+                    print("Read log contains \(rLog.count) elements: ")
                     
                     for connectionData in rLog
                     {
@@ -130,7 +127,7 @@ public class FlowerConnection
                 
                 if let wLog = writeLog
                 {
-                    print("Write log: ")
+                    print("Write log contains \(wLog.count) elements: ")
                     
                     for connectionData in wLog
                     {
@@ -159,10 +156,7 @@ public class FlowerConnection
             let message = self.writeMessageQueue.dequeue()
             let data = message.data
 
-            if var wlog = writeLog
-            {
-                wlog.append(data)
-            }
+            writeLog?.append(data)
 
             print("FlowerConnection.writeMessages: writing a message: \(message.description)")
             
