@@ -6,6 +6,8 @@
 //
 
 import Foundation
+
+import Datable
 import Transport
 import SwiftQueue
 import Transmission
@@ -103,13 +105,43 @@ public class FlowerConnection
                 rlog.append(data)
             }
 
-            log?.debug("FlowerConnection.readMessages: read data \(data.hex)")
-            print("FlowerConnection.readMessages: read data \(data.hex)")
+//            log?.debug("FlowerConnection.readMessages: read data \(data.hex)")
+//            print("FlowerConnection.readMessages: read data \(data.hex)")
 
             guard let message = Message(data: data) else
             {
                 log?.error("flower failed to parse data as message")
                 print("flower failed to parse data as message")
+                
+                if let rLog = readLog
+                {
+                    print("Read log: ")
+                    
+                    for connectionData in rLog
+                    {
+                        print(connectionData.hex)
+                    }
+                }
+                else
+                {
+                    print("Read log was null.")
+                }
+                
+                
+                if let wLog = writeLog
+                {
+                    print("Write log: ")
+                    
+                    for connectionData in wLog
+                    {
+                        print(connectionData.hex)
+                    }
+                }
+                else
+                {
+                    print("Write log is null.")
+                }
+                
                 
                 self.open = false
                 self.connection.close()
@@ -142,6 +174,7 @@ public class FlowerConnection
 
                 self.open = false
                 self.connection.close()
+                
                 return
             }
         }
