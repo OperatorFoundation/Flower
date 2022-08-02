@@ -116,7 +116,7 @@ public class FlowerConnection
                     
                     for connectionData in rLog
                     {
-                        print(connectionData.hex)
+                        print("Data length \(connectionData.count): \(connectionData.hex)")
                     }
                 }
                 else
@@ -131,7 +131,7 @@ public class FlowerConnection
                     
                     for connectionData in wLog
                     {
-                        print(connectionData.hex)
+                        print("Data length \(connectionData.count): \(connectionData.hex)")
                     }
                 }
                 else
