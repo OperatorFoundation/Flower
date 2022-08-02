@@ -37,6 +37,7 @@ public func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UIn
     sha512.update(data: destination.data)
     let hashValue = sha512.finalize()
     let hashData = Data(hashValue)
+    print("Generating a stream id with \(hashData.count) bytes: \(hashData.hex)")
 
     // Force unwrap performed under duress
     return hashData.maybeNetworkUint64!
