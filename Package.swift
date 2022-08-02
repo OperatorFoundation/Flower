@@ -16,6 +16,7 @@ name: "Flower",
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "2.1.0"),
         .package(url: "https://github.com/OperatorFoundation/Datable", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols", branch: "main"),
         .package(url: "https://github.com/apple/swift-log", from: "1.4.2"),
@@ -28,7 +29,7 @@ name: "Flower",
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "Flower",
-            dependencies: ["Datable", "SwiftQueue", "Transmission", "SwiftHexTools", .product(name: "Logging", package: "swift-log")]),
+            dependencies: ["Datable", "SwiftQueue", "Transmission", "SwiftHexTools", .product(name: "Crypto", package: "swift-crypto"), .product(name: "Logging", package: "swift-log")]),
         .testTarget(
             name: "FlowerTests",
             dependencies: ["Flower", "InternetProtocols", "Transmission"]),

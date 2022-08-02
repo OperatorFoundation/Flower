@@ -1,5 +1,6 @@
 import Foundation
 
+import Crypto
 import Datable
 import Net
 
@@ -31,11 +32,14 @@ public typealias StreamIdentifier = UInt64
 
 public func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UInt64
 {
-    var hasher = Hasher()
-    hasher.combine(source)
-    hasher.combine(destination)
-    
-    return UInt64(hasher.finalize())
+    var sha256 = SHA256()
+    sha256.update(data: source.data)
+    sha256.update(data: destination.data)
+    let hashValue = sha256.finalize()
+    let hashData = Data(hashValue)
+
+    // Force unwrap performed under duress
+    return hashData.maybeNetworkUint64!
 }
 
 public struct EndpointV4: MaybeDatable, Hashable, Comparable
