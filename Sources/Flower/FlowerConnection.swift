@@ -107,36 +107,36 @@ public class FlowerConnection
 
             guard let message = Message(data: data) else
             {
-                log?.error("flower failed to parse data as message")
-                print("flower failed to parse data as message")
+                log?.error("FlowerConnection.readMessages: failed to parse data as message")
+                print("FlowerConnection.readMessages: failed to parse data as message")
                 
                 if let rLog = readLog
                 {
-                    print("Read log contains \(rLog.count) elements: ")
+                    print("FlowerConnection.readMessages: Read log contains \(rLog.count) elements: ")
                     
                     for connectionData in rLog
                     {
-                        print("Actual Read Data length \(connectionData.count): \(connectionData.hex)")
+                        print("FlowerConnection.readMessages: Actual Read Data length \(connectionData.count): \(connectionData.hex)")
                     }
                 }
                 else
                 {
-                    print("Read log was null.")
+                    print("FlowerConnection.readMessages: Read log was null.")
                 }
                 
                 
                 if let wLog = writeLog
                 {
-                    print("Write log contains \(wLog.count) elements: ")
+                    print("FlowerConnection.readMessages: Write log contains \(wLog.count) elements: ")
                     
                     for connectionData in wLog
                     {
-                        print("Actual Write Data length \(connectionData.count): \(connectionData.hex)")
+                        print("FlowerConnection.readMessages: Actual Write Data length \(connectionData.count): \(connectionData.hex)")
                     }
                 }
                 else
                 {
-                    print("Write log is null.")
+                    print("FlowerConnection.readMessages: Write log is null.")
                 }
                 
                 

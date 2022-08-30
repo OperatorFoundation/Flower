@@ -48,7 +48,6 @@ public func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UIn
     let hashValue = sha512.finalize()
     let hashData = Data(hashValue)
     let firstEight = Data(hashData[..<8])
-    print("Generating a stream id with \(hashData.count) bytes: \(hashData.hex)")
 
     // Force unwrap performed under duress
     return firstEight.maybeNetworkUint64!
@@ -195,13 +194,13 @@ extension Message: MaybeDatable
     {
         guard let (messageTypeByte, tail) = data.splitOn(position: 1) else
         {
-            print("Flower.Message.init: Failed to initialize a Message. Unable to split the data of size \(data.count) on position 1.")
+            print("Flower.Message: Failed to initialize a Message. Unable to split the data of size \(data.count) on position 1.")
             return nil
         }
         
         guard let messageType = MessageType.init(rawValue: messageTypeByte[0]) else
         {
-            print("Failed to initialize a Message. Message type byte of \(messageTypeByte[0]) is invalid.")
+            print("Flower.Message: Failed to initialize a Message. Message type byte of \(messageTypeByte[0]) is invalid.")
             return nil
         }
         
@@ -211,13 +210,13 @@ extension Message: MaybeDatable
                 let endpointSize = AddressSize.v4.rawValue + 2
                 guard let (dstData, streamidData) = tail.splitOn(position: UInt(endpointSize)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a TCPOpenV4Type Message.")
+                    print("Flower.Message: Failed to initialize a TCPOpenV4Type Message.")
                     return nil
                 }
 
                 guard let dst = EndpointV4(data: dstData) else
                 {
-                    print("Flower.Message.init: Failed to initialize a TCPOpenV4Type Message.")
+                    print("Flower.Message: Failed to initialize a TCPOpenV4Type Message.")
                     return nil
                 }
                 
@@ -228,13 +227,13 @@ extension Message: MaybeDatable
                 let endpointSize = AddressSize.v6.rawValue + 2
                 guard let (dstData, streamidData) = tail.splitOn(position: UInt(endpointSize)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a TCPOpenV6Type Message.")
+                    print("Flower.Message: Failed to initialize a TCPOpenV6Type Message.")
                     return nil
                 }
 
                 guard let dst = EndpointV6(data: dstData) else
                 {
-                    print("Flower.Message.init: Failed to initialize a TCPOpenV6Type Message.")
+                    print("Flower.Message: Failed to initialize a TCPOpenV6Type Message.")
                     return nil
                 }
 
@@ -249,7 +248,7 @@ extension Message: MaybeDatable
                 let endpointSize = AddressSize.v4.rawValue + 2
                 guard let (streamidData, payload) = tail.splitOn(position: UInt(endpointSize)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a TCPDataType Message.")
+                    print("Flower.Message: Failed to initialize a TCPDataType Message.")
                     return nil
                 }
 
@@ -260,13 +259,13 @@ extension Message: MaybeDatable
                 let endpointSize = AddressSize.v4.rawValue + 2
                 guard let (dstData, payload) = tail.splitOn(position: UInt(endpointSize)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a UDPDataV4Type Message.")
+                    print("Flower.Message: Failed to initialize a UDPDataV4Type Message.")
                     return nil
                 }
                 
                 guard let dst = EndpointV4(data: dstData) else
                 {
-                    print("Flower.Message.init: Failed to initialize a UDPDataV4Type Message.")
+                    print("Flower.Message: Failed to initialize a UDPDataV4Type Message.")
                     return nil
                 }
                 
@@ -275,13 +274,13 @@ extension Message: MaybeDatable
                 let endpointSize = AddressSize.v6.rawValue + 2
                 guard let (dstData, payload) = tail.splitOn(position: UInt(endpointSize)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a UDPDataV6Type Message.")
+                    print("Flower.Message: Failed to initialize a UDPDataV6Type Message.")
                     return nil
                 }
 
                 guard let dst = EndpointV6(data: dstData) else
                 {
-                    print("Flower.Message.init: Failed to initialize a UDPDataV6Type Message.")
+                    print("Flower.Message: Failed to initialize a UDPDataV6Type Message.")
                     return nil
                 }
 
@@ -293,7 +292,7 @@ extension Message: MaybeDatable
             case .IPAssignV4Type:
                 guard let ip = IPv4Address(data: tail) else
                 {
-                    print("Flower.Message.init: Failed to initialize a IPAssignV4Type Message.")
+                    print("Flower.Message: Failed to initialize a IPAssignV4Type Message.")
                     return nil
                 }
                
@@ -301,7 +300,7 @@ extension Message: MaybeDatable
             case .IPAssignV6Type:
                 guard let ip = IPv6Address(data: tail) else
                 {
-                    print("Flower.Message.init: Failed to initialize a IPAssignV6Type Message.")
+                    print("Flower.Message: Failed to initialize a IPAssignV6Type Message.")
                     return nil
                 }
 
@@ -309,19 +308,19 @@ extension Message: MaybeDatable
             case .IPAssignDualStackType:
                 guard let (ipv4Bytes, ipv6Bytes) = tail.splitOn(position: UInt(AddressSize.v4.rawValue)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a IPAssignDualStackType Message.")
+                    print("Flower.Message: Failed to initialize a IPAssignDualStackType Message.")
                     return nil
                 }
             
                 guard let ipv4 = IPv4Address(data: ipv4Bytes) else
                 {
-                    print("Flower.Message.init: Failed to initialize a IPAssignDualStackType Message.")
+                    print("Flower.Message: Failed to initialize a IPAssignDualStackType Message.")
                     return nil
                 }
                 
                 guard let ipv6 = IPv6Address(data: ipv6Bytes) else
                 {
-                    print("Flower.Message.init: Failed to initialize a IPAssignDualStackType Message.")
+                    print("Flower.Message: Failed to initialize a IPAssignDualStackType Message.")
                     return nil
                 }
             
@@ -335,7 +334,7 @@ extension Message: MaybeDatable
             case .IPReuseV4Type:
                 guard let ip = IPv4Address(data: tail) else
                 {
-                    print("Flower.Message.init: Failed to initialize a IPReuseV4Type Message.")
+                    print("Flower.Message: Failed to initialize a IPReuseV4Type Message.")
                     return nil
                 }
 
@@ -343,7 +342,7 @@ extension Message: MaybeDatable
             case .IPReuseV6Type:
                 guard let ip = IPv6Address(data: tail) else
                 {
-                    print("Flower.Message.init: Failed to initialize a IPReuseV6Type Message.")
+                    print("Flower.Message: Failed to initialize a IPReuseV6Type Message.")
                     return nil
                 }
 
@@ -351,7 +350,7 @@ extension Message: MaybeDatable
             case .IPReuseDualStackType:
                 guard let (ipv4Bytes, ipv6Bytes) = tail.splitOn(position: UInt(AddressSize.v4.rawValue)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a  IPReuseDualStackType Message.")
+                    print("Flower.Message: Failed to initialize a  IPReuseDualStackType Message.")
                     return nil
                 }
 
@@ -362,7 +361,7 @@ extension Message: MaybeDatable
             case .ICMPDataV4Type:
                 guard let (ipv4Bytes, data) = tail.splitOn(position: UInt(AddressSize.v4.rawValue)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a ICMPDataV4Type Message.")
+                    print("Flower.Message: Failed to initialize a ICMPDataV4Type Message.")
                     return nil
                 }
 
@@ -372,7 +371,7 @@ extension Message: MaybeDatable
             case .ICMPDataV6Type:
                 guard let (ipv6Bytes, data) = tail.splitOn(position: UInt(AddressSize.v6.rawValue)) else
                 {
-                    print("Flower.Message.init: Failed to initialize a ICMPDataV6Type Message.")
+                    print("Flower.Message: Failed to initialize a ICMPDataV6Type Message.")
                     return nil
                 }
 
