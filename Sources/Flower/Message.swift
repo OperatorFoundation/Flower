@@ -4,8 +4,7 @@ import Crypto
 import Datable
 import Net
 
-
-public enum MessageType: UInt8
+public enum MessageType: UInt8, Codable
 {
     case TCPOpenV4Type = 0
     case TCPOpenV6Type = 1
@@ -53,7 +52,7 @@ public func generateStreamID(source: EndpointV4, destination: EndpointV4) -> UIn
     return firstEight.maybeNetworkUint64!
 }
 
-public struct EndpointV4: MaybeDatable, Hashable, Comparable
+public struct EndpointV4: MaybeDatable, Hashable, Comparable, Codable
 {
     public let host: IPv4Address
     public let port: NWEndpoint.Port
@@ -108,7 +107,7 @@ public struct EndpointV4: MaybeDatable, Hashable, Comparable
     }
 }
 
-public struct EndpointV6: MaybeDatable, Hashable, Comparable
+public struct EndpointV6: MaybeDatable, Hashable, Comparable, Codable
 {
     public let host: IPv6Address
     public let port: NWEndpoint.Port
@@ -165,7 +164,7 @@ public struct EndpointV6: MaybeDatable, Hashable, Comparable
     
 }
 
-public enum Message
+public enum Message: Codable
 {
     case TCPOpenV4(EndpointV4, StreamIdentifier)
     case TCPOpenV6(EndpointV6, StreamIdentifier)

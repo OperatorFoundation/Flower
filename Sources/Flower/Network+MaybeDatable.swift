@@ -11,7 +11,7 @@ import Datable
 import Net
 
 
-enum AddressSize: Int
+enum AddressSize: Int, Codable
 {
     case v4 = 4
     case v6 = 16
