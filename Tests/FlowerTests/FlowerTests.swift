@@ -16,6 +16,56 @@ final class FlowerTests: XCTestCase
         let result = data.uint16
         XCTAssertEqual(uint, result)
     }
+    
+    func testCodableHost() throws
+    {
+        guard let ipv4 = IPv4Address("8.8.8.8") else
+        {
+            XCTFail()
+            return
+        }
+        
+        print("ipv4: \(ipv4.debugDescription)")
+        
+        guard let ipv4Host = NWEndpoint.Host(data: ipv4.rawValue) else
+        {
+            XCTFail()
+            return
+        }
+        
+        print("ipv4Host: \(ipv4Host.debugDescription)")
+        
+        let encoder = JSONEncoder()
+        let hostJSON = try encoder.encode(ipv4Host)
+        
+        let decoder = JSONDecoder()
+        let decoded = try decoder.decode(NWEndpoint.Host.self, from: hostJSON)
+        
+        print("Decoded ipv4Host: \(decoded)")
+        
+        XCTAssert(ipv4Host == decoded)
+    }
+    
+    func testCodableIPV4() throws
+    {
+        guard let ipv4 = IPv4Address("8.8.8.8") else
+        {
+            XCTFail()
+            return
+        }
+        
+        print("ipv4: \(ipv4.debugDescription)")
+        
+        let encoder = JSONEncoder()
+        let ipv4JSON = try encoder.encode(ipv4)
+        
+        let decoder = JSONDecoder()
+        let decoded = try decoder.decode(IPv4Address.self, from: ipv4JSON)
+        
+        print("Decoded ipv4: \(decoded)")
+        
+        XCTAssert(ipv4 == decoded)
+    }
 
     func testServer()
     {

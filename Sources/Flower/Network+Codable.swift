@@ -11,89 +11,131 @@ import Net
 
 extension NWEndpoint.Host: Codable
 {
+    enum CodingKeys: String, CodingKey
+    {
+        case hostData
+    }
+    
     public init(from decoder: Decoder) throws
     {
-        let container = try decoder.singleValueContainer()
-        let string = try container.decode(String.self)
-        self.init(string)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedHostData = try container.decode(Data.self, forKey: .hostData)
+        
+        guard let host = NWEndpoint.Host(data: decodedHostData) else
+        {
+            throw NetworkCodableError.hostDataInvalid
+        }
+        
+        self = host
     }
-
+    
     public func encode(to encoder: Encoder) throws
     {
-        var container = encoder.singleValueContainer()
-
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
         switch self
         {
             case .ipv4(let ipv4):
-                let data = ipv4.rawValue
-                let string = "\(data[0]).\(data[1]).\(data[2]).\(data[3])"
-
-                try container.encode(string)
-
-            default:
+                try container.encode(ipv4.rawValue, forKey: .hostData)
+            case .ipv6(let ipv6):
+                try container.encode(ipv6.rawValue, forKey: .hostData)
+            case .name(_, _):
                 throw NetworkCodableError.nameAddressUnsupported
+            @unknown default:
+                throw NetworkCodableError.badHost
         }
     }
 }
 
 extension IPv4Address: Codable
 {
+    enum CodingKeys: String, CodingKey
+    {
+        case rawData
+    }
+    
     public init(from decoder: Decoder) throws
     {
-        let container = try decoder.singleValueContainer()
-        let string = try container.decode(String.self)
-        self.init(string)! // FIXME - this is bad, but it's unclear how to work around this in a Codable extension
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedRawData = try container.decode(Data.self, forKey: .rawData)
+        
+        guard let ipv4Address = IPv4Address(decodedRawData) else
+        {
+            throw NetworkCodableError.ipv4DataInvalid
+        }
+        
+        self = ipv4Address
     }
 
     public func encode(to encoder: Encoder) throws
     {
-        var container = encoder.singleValueContainer()
-
-        let data = self.rawValue
-        let string = "\(data[0]).\(data[1]).\(data[2]).\(data[3])"
-
-        try container.encode(string)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.rawValue, forKey: .rawData)
     }
 }
 
 extension IPv6Address: Codable
 {
-    public init(from decoder: Decoder) throws
+    enum CodingKeys: String, CodingKey
     {
-        let container = try decoder.singleValueContainer()
-        let string = try container.decode(String.self)
-        self.init(string)! // FIXME - this is bad, but it's unclear how to work around this in a Codable extension
+        case rawData
     }
 
+    public init(from decoder: Decoder) throws
+    {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedRawData = try container.decode(Data.self, forKey: .rawData)
+        
+        guard let ipv6Address = IPv6Address(decodedRawData) else
+        {
+            throw NetworkCodableError.ipv6DataInvalid
+        }
+        
+        self = ipv6Address
+    }
+    
     public func encode(to encoder: Encoder) throws
     {
-        var container = encoder.singleValueContainer()
-
-        let string = self.debugDescription // FIXME - This is bad, never do this. It is unclear how to get a proper string from an IPv6Address type.
-        try container.encode(string)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.rawValue, forKey: .rawData)
     }
 }
 
 extension NWEndpoint.Port: Codable
 {
+    enum CodingKeys: String, CodingKey
+    {
+        case rawData
+    }
+    
     public init(from decoder: Decoder) throws
     {
-        let container = try decoder.singleValueContainer()
-        let uint16 = try container.decode(UInt16.self)
-        self.init(rawValue: uint16)! // FIXME - this is bad, but it's unclear how to work around this in a Codable extension
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedRawData = try container.decode(UInt16.self, forKey: .rawData)
+        
+        guard let port = NWEndpoint.Port(rawValue: decodedRawData) else
+        {
+            throw NetworkCodableError.badPort(decodedRawData)
+        }
+        
+        self = port
     }
 
     public func encode(to encoder: Encoder) throws
     {
-        var container = encoder.singleValueContainer()
-
-        try container.encode(self.rawValue)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.rawValue, forKey: .rawData)
     }
 }
 
 public enum NetworkCodableError: Error
 {
-    case ipv6Unsupported
-    case nameAddressUnsupported
+    case badHost
     case badIPAddress
+    case badPort(UInt16)
+    case nameAddressUnsupported
+    case hostDataInvalid
+    case ipv4DataInvalid
+    case ipv6DataInvalid
+    case ipv6Unsupported
 }
