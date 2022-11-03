@@ -66,6 +66,23 @@ final class FlowerTests: XCTestCase
         
         XCTAssert(ipv4 == decoded)
     }
+    
+    func testCodablePort() throws
+    {
+        let port = NWEndpoint.Port(1122)
+        
+        print("port: \(port.debugDescription)")
+        
+        let encoder = JSONEncoder()
+        let portJSON = try encoder.encode(port)
+        
+        let decoder = JSONDecoder()
+        let decoded = try decoder.decode(NWEndpoint.Port.self, from: portJSON)
+        
+        print("Decoded port: \(decoded)")
+        
+        XCTAssert(port == decoded)
+    }
 
     func testServer()
     {

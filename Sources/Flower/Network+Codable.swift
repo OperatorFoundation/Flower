@@ -105,26 +105,20 @@ extension NWEndpoint.Port: Codable
 {
     enum CodingKeys: String, CodingKey
     {
-        case rawData
+        case intLiteral
     }
     
     public init(from decoder: Decoder) throws
     {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let decodedRawData = try container.decode(UInt16.self, forKey: .rawData)
-        
-        guard let port = NWEndpoint.Port(rawValue: decodedRawData) else
-        {
-            throw NetworkCodableError.badPort(decodedRawData)
-        }
-        
-        self = port
+        let decodedUInt16 = try container.decode(UInt16.self, forKey: .intLiteral)
+        self.init(integerLiteral: decodedUInt16)
     }
 
     public func encode(to encoder: Encoder) throws
     {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(self.rawValue, forKey: .rawData)
+        try container.encode(self.rawValue, forKey: .intLiteral)
     }
 }
 
