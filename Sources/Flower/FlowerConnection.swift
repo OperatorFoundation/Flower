@@ -105,6 +105,15 @@ public class FlowerConnection
 //            log?.debug("FlowerConnection.readMessages: read data \(data.hex)")
 //            print("FlowerConnection.readMessages: read data \(data.hex)")
 
+            guard data.count > 0 else
+            {
+                log?.error("Transmission.Connection.readWithLengthPrefix(prefixSizeInBits: 16) returns a data of count 0. This should not happen.")
+
+                self.open = false
+                self.connection.close()
+                return
+            }
+
             guard let message = Message(data: data) else
             {
                 log?.error("FlowerConnection.readMessages: failed to parse data as message")
