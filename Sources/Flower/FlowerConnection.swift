@@ -7,12 +7,17 @@
 
 import Foundation
 
+#if os(macOS) || os(iOS)
+import os.log
+#else
+import Logging
+#endif
+
 import Datable
 import Transport
 import SwiftQueue
 import Transmission
 import Chord
-import Logging
 import SwiftHexTools
 
 public class FlowerConnection
@@ -74,8 +79,9 @@ public class FlowerConnection
 
     public func writeMessage(message: Message)
     {
-        print("FlowerConnection.writeMessage: enqueueing \(message)")
-        return self.writeMessageQueue.enqueue(element: message)
+        logAThing(logger: log, logMessage: "FlowerConnection.writeMessage: enqueueing \(message)")
+        self.writeMessageQueue.enqueue(element: message)
+        logAThing(logger: log, logMessage: "FlowerConnection.writeMessage: enqueued \(message)")
     }
 
     public func close()
@@ -86,14 +92,14 @@ public class FlowerConnection
 
     func readMessages()
     {
-        print("FlowerConnection.readMessages() called")
+        logAThing(logger: log, logMessage: "readMessages() called")
+        
         while self.open
         {
             guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
             {
-                log?.info("FlowerConnection.readMessages: flower connection was closed by other side")
-                log?.info("FlowerConnection.readMessages: closing flower connection")
-                print("FlowerConnection.readMessages: flower connection was closed by other side")
+                logAThing(logger: log, logMessage: "FlowerConnection.readMessages: flower connection failed to get data from readWithLengthPrefix")
+                logAThing(logger: log, logMessage: "FlowerConnection.readMessages: closing flower connection")
 
                 self.open = false
                 self.connection.close()
@@ -103,11 +109,11 @@ public class FlowerConnection
             readLog?.append(data)
 
 //            log?.debug("FlowerConnection.readMessages: read data \(data.hex)")
-//            print("FlowerConnection.readMessages: read data \(data.hex)")
 
             guard data.count > 0 else
             {
-                log?.error("Transmission.Connection.readWithLengthPrefix(prefixSizeInBits: 16) returns a data of count 0. This should not happen.")
+                logAThing(logger: log, logMessage: "readWithLengthPrefix(prefixSizeInBits: 16) returned a data of 0 bytes using a \(type(of: connection)).")
+                logAThing(logger: log, logMessage: "FlowerConnection.readMessages: closing flower connection")
 
                 self.open = false
                 self.connection.close()
@@ -117,7 +123,6 @@ public class FlowerConnection
             guard let message = Message(data: data) else
             {
                 log?.error("FlowerConnection.readMessages: failed to parse data as message")
-                print("FlowerConnection.readMessages: failed to parse data as message")
                 
                 if let rLog = readLog
                 {
@@ -162,24 +167,44 @@ public class FlowerConnection
     {
         while self.open
         {
+            logAThing(logger: log, logMessage: "writeMessages is dequeueing a message.")
             let message = self.writeMessageQueue.dequeue()
+            logAThing(logger: log, logMessage: "writeMessages is dequeued a message: \(message.description)")
+            
             let data = message.data
 
             writeLog?.append(data)
 
-            print("FlowerConnection.writeMessages: writing a message: \(message.description)")
+            logAThing(logger: log, logMessage: "FlowerConnection.writeMessages: writing a message: \(message.description)")
             
             guard self.connection.writeWithLengthPrefix(data: data, prefixSizeInBits: 16) else
             {
-                log?.info("FlowerConnection.writeMessages: flower connection was closed by other side")
-                log?.info("FlowerConnection.writeMessages: closing flower connection")
-                print("FlowerConnection.writeMessages: flower connection was closed by other side")
+                logAThing(logger: log, logMessage: "FlowerConnection.writeMessages: writeWithLengthPrefix failed using a \(type(of: connection))")
+                logAThing(logger: log, logMessage: "FlowerConnection.writeMessages: closing flower connection")
 
                 self.open = false
                 self.connection.close()
                 
                 return
             }
+            
+            logAThing(logger: log, logMessage: "writeMessages wrote to the connection.")
         }
+    }
+}
+
+func logAThing(logger: Logger?, logMessage: String)
+{
+    if let aLog = logger
+    {
+        #if os(macOS) || os(iOS)
+        aLog.log("🌷 \(logMessage, privacy: .public)")
+        #else
+        aLog.debug("🌷 \(logMessage)")
+        #endif
+    }
+    else
+    {
+        print("🌷 \(logMessage)")
     }
 }
