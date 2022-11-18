@@ -1,19 +1,10 @@
-
-@testable import Flower
-
-#if os(macOS) || os(iOS)
-import os.log
-#else
-import Logging
-#endif
-
-import XCTest
-
 import Datable
+@testable import Flower
 import InternetProtocols
+import Logging
 import Net
 import Transmission
-
+import XCTest
 
 final class FlowerTests: XCTestCase
 {
@@ -104,7 +95,7 @@ final class FlowerTests: XCTestCase
             return
         }
         
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
         {
             XCTFail()
             return
@@ -212,7 +203,7 @@ final class FlowerTests: XCTestCase
             return
         }
 
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "164.92.71.230", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "206.189.200.18", port: 1234) else
         {
             XCTFail()
             return
@@ -249,12 +240,7 @@ final class FlowerTests: XCTestCase
 
     func testClientServer()
     {
-        #if os(macOS) || os(iOS)
-        let logger = Logger(subsystem: "org.OperatorFoundation.Flower", category: "FlowerTests")
-        #else
-        let logger = Logger(label: "org.OperatorFoundation.Flower")
-        #endif
-        
+        let logger = Logger(label: "FlowerTests")
         let queue = DispatchQueue(label: "FlowerTests.testClientServer.server")
         let lock = DispatchGroup()
         let serverRead = expectation(description: "server read")
