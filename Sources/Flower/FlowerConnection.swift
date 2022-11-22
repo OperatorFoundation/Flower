@@ -96,6 +96,7 @@ public class FlowerConnection
         
         while self.open
         {
+            logAThing(logger: log, logMessage: "Read messages loop.")
             guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
             {
                 logAThing(logger: log, logMessage: "FlowerConnection.readMessages: flower connection failed to get data from readWithLengthPrefix")
@@ -105,10 +106,9 @@ public class FlowerConnection
                 self.connection.close()
                 return
             }
-
+            
+            logAThing(logger: log, logMessage: "Read some data \(data.count) bytes.")
             readLog?.append(data)
-
-//            log?.debug("FlowerConnection.readMessages: read data \(data.hex)")
 
             guard data.count > 0 else
             {
@@ -161,6 +161,8 @@ public class FlowerConnection
 
             self.readMessageQueue.enqueue(element: message)
         }
+        
+        logAThing(logger: log, logMessage: "Exited read messages loop.")
     }
 
     func writeMessages()
