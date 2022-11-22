@@ -96,7 +96,7 @@ public class FlowerConnection
         
         while self.open
         {
-            logAThing(logger: log, logMessage: "Read messages loop.")
+            logAThing(logger: log, logMessage: "Read messages loop on connection type: \(type(of: self.connection)) : \(self.connection)")
             guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
             {
                 logAThing(logger: log, logMessage: "FlowerConnection.readMessages: flower connection failed to get data from readWithLengthPrefix")
