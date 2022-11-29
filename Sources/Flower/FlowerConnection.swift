@@ -79,9 +79,7 @@ public class FlowerConnection
 
     public func writeMessage(message: Message)
     {
-        logAThing(logger: log, logMessage: "FlowerConnection.writeMessage: enqueueing \(message)")
         self.writeMessageQueue.enqueue(element: message)
-        logAThing(logger: log, logMessage: "FlowerConnection.writeMessage: enqueued \(message)")
     }
 
     public func close()
@@ -92,11 +90,8 @@ public class FlowerConnection
 
     func readMessages()
     {
-        logAThing(logger: log, logMessage: "readMessages() called")
-        
         while self.open
         {
-            logAThing(logger: log, logMessage: "Read messages loop on connection type: \(type(of: self.connection)) : \(self.connection)")
             guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
             {
                 logAThing(logger: log, logMessage: "FlowerConnection.readMessages: flower connection failed to get data from readWithLengthPrefix")
@@ -107,7 +102,6 @@ public class FlowerConnection
                 return
             }
             
-            logAThing(logger: log, logMessage: "Read some data \(data.count) bytes.")
             readLog?.append(data)
 
             guard data.count > 0 else
@@ -161,23 +155,16 @@ public class FlowerConnection
 
             self.readMessageQueue.enqueue(element: message)
         }
-        
-        logAThing(logger: log, logMessage: "Exited read messages loop.")
     }
 
     func writeMessages()
     {
         while self.open
         {
-            logAThing(logger: log, logMessage: "writeMessages is dequeueing a message.")
             let message = self.writeMessageQueue.dequeue()
-            logAThing(logger: log, logMessage: "writeMessages is dequeued a message: \(message.description)")
-            
             let data = message.data
 
             writeLog?.append(data)
-
-            logAThing(logger: log, logMessage: "FlowerConnection.writeMessages: writing a message: \(message.description)")
             
             guard self.connection.writeWithLengthPrefix(data: data, prefixSizeInBits: 16) else
             {
@@ -189,8 +176,6 @@ public class FlowerConnection
                 
                 return
             }
-            
-            logAThing(logger: log, logMessage: "writeMessages wrote to the connection.")
         }
     }
 }
