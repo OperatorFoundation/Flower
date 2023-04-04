@@ -90,7 +90,8 @@ public class FlowerConnection
 
     func readMessages()
     {
-        self.log?.log("FlowerConnection.readMessages() called")
+        logAThing(logger: log, logMessage: "FlowerConnection.readMessages() called")
+
         while self.open
         {
             guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
@@ -99,7 +100,6 @@ public class FlowerConnection
                 logAThing(logger: log, logMessage: "FlowerConnection.readMessages: closing flower connection")
 
                 self.open = false
-                self.log?.log("FlowerConnection.readMessages() setting self.open to false")
                 self.connection.close()
                 return
             }
@@ -112,7 +112,6 @@ public class FlowerConnection
                 logAThing(logger: log, logMessage: "FlowerConnection.readMessages: closing flower connection")
 
                 self.open = false
-                self.log?.log("FlowerConnection.readMessages() setting self.open to false")
                 self.connection.close()
                 return
             }
@@ -152,14 +151,12 @@ public class FlowerConnection
                 
                 
                 self.open = false
-                self.log?.log("FlowerConnection.readMessages() setting self.open to false")
                 self.connection.close()
                 return
             }
 
             self.readMessageQueue.enqueue(element: message)
         }
-        self.log?.log("FlowerConnection closed")
     }
 
     func writeMessages()
@@ -177,7 +174,6 @@ public class FlowerConnection
                 logAThing(logger: log, logMessage: "FlowerConnection.writeMessages: closing flower connection")
 
                 self.open = false
-                self.log?.log("FlowerConnection.writeMessages() setting self.open to false")
                 self.connection.close()
                 
                 return
