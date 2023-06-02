@@ -16,7 +16,7 @@ import Transmission
 
 final class FlowerTests: XCTestCase
 {
-    let externalHost = "8.8.8.8"
+    let externalHost = "192.168.1.183"
     let localHost = "127.0.0.1"
     
     func testUInt16()
@@ -106,7 +106,7 @@ final class FlowerTests: XCTestCase
             return
         }
         
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: externalHost, port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: externalHost, port: 2121) else
         {
             XCTFail()
             return

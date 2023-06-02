@@ -99,9 +99,7 @@ public class FlowerConnection
                 logAThing(logger: log, logMessage: "FlowerConnection.readMessages: flower connection failed to get data from readWithLengthPrefix")
                 logAThing(logger: log, logMessage: "FlowerConnection.readMessages: closing flower connection")
 
-                self.open = false
-                self.connection.close()
-                return
+                continue
             }
             
             readLog?.append(data)
