@@ -5,9 +5,15 @@
 //  Created by Dr. Brandon Wiley on 12/8/21.
 //
 
+#if os(macOS) || os(iOS)
+import os.log
+#else
+import Logging
+#endif
+
 import Foundation
 import Transmission
-import Logging
+
 
 public class FlowerListener
 {

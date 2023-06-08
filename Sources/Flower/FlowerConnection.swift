@@ -7,12 +7,17 @@
 
 import Foundation
 
+#if os(macOS) || os(iOS)
+import os.log
+#else
+import Logging
+#endif
+
 import Datable
 import Transport
 import SwiftQueue
 import Transmission
 import Chord
-import Logging
 import SwiftHexTools
 
 public class FlowerConnection
@@ -22,12 +27,6 @@ public class FlowerConnection
 
     public let connection: Transmission.Connection
 
-    let readMessageQueue: BlockingQueue<Message> = BlockingQueue<Message>()
-    let writeMessageQueue: BlockingQueue<Message> = BlockingQueue<Message>()
-
-    let readQueue: DispatchQueue = DispatchQueue(label: "FlowerConnection.readMessages")
-    let writeQueue: DispatchQueue = DispatchQueue(label: "FlowerConnection.writeMessages")
-    
     let log: Logger?
     var open = true
 
@@ -46,36 +45,92 @@ public class FlowerConnection
         {
             writeLog = []
         }
-        
-        self.readQueue.async
-        {
-            print("🌷 FlowerConnection starting readMessages queue")
-            self.readMessages()
-        }
-
-        self.writeQueue.async
-        {
-            print("🌷 FlowerConnection starting writeMessages queue")
-            self.writeMessages()
-        }
     }
 
     public func readMessage() -> Message?
     {
-        if open
-        {
-            return self.readMessageQueue.dequeue()
-        }
-        else
+        guard open else
         {
             return nil
         }
+
+        guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
+        {
+            logAThing(logger: log, logMessage: "FlowerConnection.readMessages: flower connection failed to get data from readWithLengthPrefix")
+            logAThing(logger: log, logMessage: "FlowerConnection.readMessages: closing flower connection")
+
+            return nil
+        }
+
+        readLog?.append(data)
+
+        guard data.count > 0 else
+        {
+            logAThing(logger: log, logMessage: "readWithLengthPrefix(prefixSizeInBits: 16) returned a data of 0 bytes using a \(type(of: connection)).")
+            logAThing(logger: log, logMessage: "FlowerConnection.readMessages: closing flower connection")
+
+            return nil
+        }
+
+        guard let message = Message(data: data) else
+        {
+            log?.error("FlowerConnection.readMessages: failed to parse data as message")
+
+            if let rLog = readLog
+            {
+                print("FlowerConnection.readMessages: Read log contains \(rLog.count) elements: ")
+
+                for connectionData in rLog
+                {
+                    print("FlowerConnection.readMessages: Actual Read Data length \(connectionData.count): \(connectionData.hex)")
+                }
+            }
+            else
+            {
+                print("FlowerConnection.readMessages: Read log was null.")
+            }
+
+            if let wLog = writeLog
+            {
+                print("FlowerConnection.readMessages: Write log contains \(wLog.count) elements: ")
+
+                for connectionData in wLog
+                {
+                    print("FlowerConnection.readMessages: Actual Write Data length \(connectionData.count): \(connectionData.hex)")
+                }
+            }
+            else
+            {
+                print("FlowerConnection.readMessages: Write log is null.")
+            }
+
+            return nil
+        }
+
+        return message
     }
 
     public func writeMessage(message: Message)
     {
-        print("FlowerConnection.writeMessage: enqueueing \(message)")
-        return self.writeMessageQueue.enqueue(element: message)
+        guard open else
+        {
+            return
+        }
+
+        let data = message.data
+
+        writeLog?.append(data)
+
+        guard self.connection.writeWithLengthPrefix(data: data, prefixSizeInBits: 16) else
+        {
+            logAThing(logger: log, logMessage: "FlowerConnection.writeMessages: writeWithLengthPrefix failed using a \(type(of: connection))")
+            logAThing(logger: log, logMessage: "FlowerConnection.writeMessages: closing flower connection")
+
+            self.open = false
+            self.connection.close()
+
+            return
+        }
     }
 
     public func close()
@@ -83,103 +138,20 @@ public class FlowerConnection
         self.open = false
         self.connection.close()
     }
+}
 
-    func readMessages()
+func logAThing(logger: Logger?, logMessage: String)
+{
+    if let aLog = logger
     {
-        print("FlowerConnection.readMessages() called")
-        while self.open
-        {
-            guard let data = self.connection.readWithLengthPrefix(prefixSizeInBits: 16) else
-            {
-                log?.info("FlowerConnection.readMessages: flower connection was closed by other side")
-                log?.info("FlowerConnection.readMessages: closing flower connection")
-                print("FlowerConnection.readMessages: flower connection was closed by other side")
-
-                self.open = false
-                self.connection.close()
-                return
-            }
-
-            readLog?.append(data)
-
-//            log?.debug("FlowerConnection.readMessages: read data \(data.hex)")
-//            print("FlowerConnection.readMessages: read data \(data.hex)")
-
-            guard data.count > 0 else
-            {
-                log?.error("Transmission.Connection.readWithLengthPrefix(prefixSizeInBits: 16) returns a data of count 0. This should not happen.")
-
-                self.open = false
-                self.connection.close()
-                return
-            }
-
-            guard let message = Message(data: data) else
-            {
-                log?.error("FlowerConnection.readMessages: failed to parse data as message")
-                print("FlowerConnection.readMessages: failed to parse data as message")
-                
-                if let rLog = readLog
-                {
-                    print("FlowerConnection.readMessages: Read log contains \(rLog.count) elements: ")
-                    
-                    for connectionData in rLog
-                    {
-                        print("FlowerConnection.readMessages: Actual Read Data length \(connectionData.count): \(connectionData.hex)")
-                    }
-                }
-                else
-                {
-                    print("FlowerConnection.readMessages: Read log was null.")
-                }
-                
-                
-                if let wLog = writeLog
-                {
-                    print("FlowerConnection.readMessages: Write log contains \(wLog.count) elements: ")
-                    
-                    for connectionData in wLog
-                    {
-                        print("FlowerConnection.readMessages: Actual Write Data length \(connectionData.count): \(connectionData.hex)")
-                    }
-                }
-                else
-                {
-                    print("FlowerConnection.readMessages: Write log is null.")
-                }
-                
-                
-                self.open = false
-                self.connection.close()
-                return
-            }
-
-            self.readMessageQueue.enqueue(element: message)
-        }
+        #if os(macOS) || os(iOS)
+        aLog.log("🌷 \(logMessage, privacy: .public)")
+        #else
+        aLog.debug("🌷 \(logMessage)")
+        #endif
     }
-
-    func writeMessages()
+    else
     {
-        while self.open
-        {
-            let message = self.writeMessageQueue.dequeue()
-            let data = message.data
-
-            writeLog?.append(data)
-
-            print("FlowerConnection.writeMessages: writing a message: \(message.description)")
-            
-            guard self.connection.writeWithLengthPrefix(data: data, prefixSizeInBits: 16) else
-            {
-                log?.info("FlowerConnection.writeMessages: flower connection was closed by other side")
-                log?.info("FlowerConnection.writeMessages: closing flower connection")
-                print("FlowerConnection.writeMessages: flower connection was closed by other side")
-
-                self.open = false
-                self.connection.close()
-                
-                return
-            }
-        }
+        print("🌷 \(logMessage)")
     }
 }

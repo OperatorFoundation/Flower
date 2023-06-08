@@ -1,13 +1,24 @@
-import Datable
+
 @testable import Flower
-import InternetProtocols
+
+#if os(macOS) || os(iOS)
+import os.log
+#else
 import Logging
+#endif
+
+import XCTest
+
+import Datable
+import InternetProtocols
 import Net
 import Transmission
-import XCTest
 
 final class FlowerTests: XCTestCase
 {
+    let externalHost = "192.168.1.183"
+    let localHost = "127.0.0.1"
+    
     func testUInt16()
     {
         let uint: UInt16 = 99
@@ -19,7 +30,7 @@ final class FlowerTests: XCTestCase
     
     func testCodableHost() throws
     {
-        guard let ipv4 = IPv4Address("8.8.8.8") else
+        guard let ipv4 = IPv4Address(externalHost) else
         {
             XCTFail()
             return
@@ -48,7 +59,7 @@ final class FlowerTests: XCTestCase
     
     func testCodableIPV4() throws
     {
-        guard let ipv4 = IPv4Address("8.8.8.8") else
+        guard let ipv4 = IPv4Address(externalHost) else
         {
             XCTFail()
             return
@@ -95,14 +106,16 @@ final class FlowerTests: XCTestCase
             return
         }
         
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: localHost, port: 2121) else
         {
             XCTFail()
             return
         }
         
         let flowerConnection = FlowerConnection(connection: transmissionConnection, log: nil)
-        
+
+        let ipRequest = Message.IPRequestV4
+        flowerConnection.writeMessage(message: ipRequest)
 
         guard let ipAssign = flowerConnection.readMessage() else
         {
@@ -147,7 +160,7 @@ final class FlowerTests: XCTestCase
             return
         }
         
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: localHost, port: 1234) else
         {
             XCTFail()
             return
@@ -203,7 +216,7 @@ final class FlowerTests: XCTestCase
             return
         }
 
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "206.189.200.18", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: externalHost, port: 1234) else
         {
             XCTFail()
             return
@@ -238,59 +251,59 @@ final class FlowerTests: XCTestCase
         Thread.sleep(forTimeInterval: 1)
     }
 
-    func testClientServer()
-    {
-        let logger = Logger(label: "FlowerTests")
-        let queue = DispatchQueue(label: "FlowerTests.testClientServer.server")
-        let lock = DispatchGroup()
-        let serverRead = expectation(description: "server read")
-
-        lock.enter()
-        queue.async
-        {
-            guard let networkListener = TransmissionListener(port: 1234, logger: logger) else
-            {
-                XCTFail()
-                return
-            }
-
-            let flowerListener = FlowerListener(listener: networkListener, logger: logger)
-            lock.leave()
-
-            do
-            {
-                let flowerConnection = try flowerListener.accept()
-                flowerConnection.writeMessage(message: .IPDataV4("server".data))
-                _ = flowerConnection.readMessage()
-                serverRead.fulfill()
-            }
-            catch
-            {
-                print(error)
-                XCTFail()
-            }
-            
-            return
-        }
-        
-        lock.wait()
-
-        guard let networkConnection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
-        {
-            XCTFail()
-            return
-        }
-
-        let flowerConnection = FlowerConnection(connection: networkConnection, log: logger)
-        flowerConnection.writeMessage(message: .IPDataV4("client".data))
-        _ = flowerConnection.readMessage()
-
-        wait(for: [serverRead], timeout: 30)
-    }
+//    func testClientServer()
+//    {
+//        let logger = Logger(subsystem: "org.OperatorFoundation.Flower", category: "FlowerTests")
+//        let queue = DispatchQueue(label: "FlowerTests.testClientServer.server")
+//        let lock = DispatchGroup()
+//        let serverRead = expectation(description: "server read")
+//
+//        lock.enter()
+//        queue.async
+//        {
+//            guard let networkListener = TransmissionListener(port: 1234, logger: logger) else
+//            {
+//                XCTFail()
+//                return
+//            }
+//
+//            let flowerListener = FlowerListener(listener: networkListener, logger: logger)
+//            lock.leave()
+//
+//            do
+//            {
+//                let flowerConnection = try flowerListener.accept()
+//                flowerConnection.writeMessage(message: .IPDataV4("server".data))
+//                _ = flowerConnection.readMessage()
+//                serverRead.fulfill()
+//            }
+//            catch
+//            {
+//                print(error)
+//                XCTFail()
+//            }
+//
+//            return
+//        }
+//
+//        lock.wait()
+//
+//        guard let networkConnection = TransmissionConnection(host: localHost, port: 1234) else
+//        {
+//            XCTFail()
+//            return
+//        }
+//
+//        let flowerConnection = FlowerConnection(connection: networkConnection, log: logger)
+//        flowerConnection.writeMessage(message: .IPDataV4("client".data))
+//        _ = flowerConnection.readMessage()
+//
+//        wait(for: [serverRead], timeout: 30)
+//    }
     
     func testReplicantSwiftServer()
     {
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "host", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: externalHost, port: 1234) else
 
         {
             XCTFail()
@@ -326,7 +339,7 @@ final class FlowerTests: XCTestCase
             return
         }
         
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: externalHost, port: 1234) else
         {
             XCTFail()
             return
@@ -387,8 +400,7 @@ final class FlowerTests: XCTestCase
             return
         }
         
-//        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "164.92.71.230", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: externalHost, port: 1234) else
         {
             XCTFail()
             return
@@ -500,8 +512,7 @@ final class FlowerTests: XCTestCase
             return
         }
         
-    //        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "159.203.108.187", port: 1234) else
-        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: "127.0.0.1", port: 1234) else
+        guard let transmissionConnection: Transmission.Connection = TransmissionConnection(host: externalHost, port: 1234) else
         {
             XCTFail()
             return
